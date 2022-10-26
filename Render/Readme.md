@@ -37,9 +37,13 @@ Once I got the petals looking right, I used geometry nodes again to project them
 
 ![First flower render](./Render_Progression/00-first-flower.png)
 
+Here is the geometry nodes layout creating the flower:
+
+![Flower geometry nodes](./Blender_Project_Files/Process_Pics/flower-bloomer.png)
+
 The material looked pretty bad but that was an encouraging first step and I was satisfied with those first few models.
 
-I spent a few hours messing with the velvet shader because I thought this would allow me to approximate the feel and texture of a flower.
+I spent a few hours messing with the velvet shader because I thought this would allow me to approximate the feel and texture of a flower. A simple mix between the principled BSDF and the velvet shader gave these results:
 
 ![Velvet Test 1](./Render_Progression/01-flower-velvet-test.png)
 ![Velvet Test 2](./Render_Progression/02-flower-velvet-test.png)
@@ -72,7 +76,7 @@ Here is the first try using a static texture:
 
 The result is quite disappointing. The texture doesn't loop properly and isn't as contrasted as I hoped. I figured I might as well try another method.
 
-The method I had in mind was using a step function on a perlin smooth noise. By multiplying the smooth noise by a constant, than taking the decimal part of the result, I would get several "wave-y" patterns quite similar to the liquify effect I was looking for. One thing I noticed is that the liquid being rather thin, you only realised the texture was in screenspace when moving around. I didn't mind that as I plan to animate it at some point anyway and the result still looks great.
+The method I had in mind was using a step function on a perlin smooth noise. By multiplying the smooth noise by a constant, than taking the decimal part of the result, I would get several "wave-y" patterns quite similar to the liquify effect I was looking for. One thing I noticed is that the liquid being rather thin, you only realised the texture was in screenspace when moving around. Having the fluid shaded also slightly removes that effect. I didn't mind that as I plan to animate it at some point anyway and the result still looks great.
 
 Here is the first result:
 
@@ -86,6 +90,22 @@ Enjoy some iterations:
 ![Dynamic screenspace texture with transparency](./Render_Progression/07-sim-transparency.png)
 ![Dynamic screenspace texture with transparency](./Render_Progression/08-sim-transparency.png)
 
+I ended up going back to my first idea of black and white patterns.
+
+### **Stem, thorns and leaves**
+
+I modelled a simple small thorn for which I made a simple material using stretched noise and a gradient on a base color then distributed it on the stem using a simple geometry node (Distribute points on faces > Instances on points + a couple of modifications).  
+I also made a material for the leaves using a voronoi pattern and mixing between two colours with it.  
+Finally, I used a stretched noise on the stem itself to give it roughness.
+
+![9](./Render_Progression/09-stem-thorns.png)  
+^ Thorns modelled, shaded and distributed
+
+![10](./Render_Progression/10-stem-leaf-materials.png)  
+^ Stem and leaves material implemented
+
+Overall, the results are not fantastic, approaching realism being very hard. It doesn't matter too much however as I didn't plan on having the focus be on the stem.
+
 Here are the render steps:
 
 <!-- ![0](./Render_Progression/00-first-flower.png) -->
@@ -97,8 +117,8 @@ Here are the render steps:
 <!-- ![6](./Render_Progression/06-sim-texture-colours.png) -->
 <!-- ![7](./Render_Progression/07-sim-transparency.png) -->
 <!-- ![8](./Render_Progression/08-sim-transparency.png) -->
-![9](./Render_Progression/09-stem-thorns.png)
-![10](./Render_Progression/10-stem-leaf-materials.png)
+<!-- ![9](./Render_Progression/09-stem-thorns.png) -->
+<!-- ![10](./Render_Progression/10-stem-leaf-materials.png) -->
 ![11](./Render_Progression/11-table.png)
 ![12](./Render_Progression/12-glass-bell.png)
 ![13](./Render_Progression/13-volumetric-glow.png)
