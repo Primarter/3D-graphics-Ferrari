@@ -67,7 +67,7 @@ Blender allows us to apply any kind of material onto the mesh created by the flu
 
 My goal was to use a texture like that and put it in screenspace on the fluid. Screenspace means that the fluid acts like a window on the texture that would be behind the image. It's commonly used to make nice space effects in video games. Here is an example:
 
-![Screenspace example](https://realtimevfx.com/uploads/default/original/2X/1/112f6de74a2cd3934215191b0753955e7bd70eb2.jpeg)
+![Screenspace example](https://realtimevfx.com/uploads/default/original/2X/1/112f6de74a2cd3934215191b0753955e7bd70eb2.jpeg)  
 [Source](https://realtimevfx.com/t/screen-space-cosmic-shader-breakdown-unity-ase-shaders-textures-included/9753)
 
 Here is the first try using a static texture:
@@ -96,34 +96,63 @@ I ended up going back to my first idea of black and white patterns.
 
 I modelled a simple small thorn for which I made a simple material using stretched noise and a gradient on a base color then distributed it on the stem using a simple geometry node (Distribute points on faces > Instances on points + a couple of modifications).  
 I also made a material for the leaves using a voronoi pattern and mixing between two colours with it.  
-Finally, I used a stretched noise on the stem itself to give it roughness.
+Finally, I used a stretched noise on the stem itself to give it roughness. I reduced the shine of both the stem and the leaves to avoid them taking the focus away from the flower.
 
-![9](./Render_Progression/09-stem-thorns.png)  
+![Thorns modelled, shaded and distributed](./Render_Progression/09-stem-thorns.png)  
 ^ Thorns modelled, shaded and distributed
 
-![10](./Render_Progression/10-stem-leaf-materials.png)  
+![Stem and leaves material implemented](./Render_Progression/10-stem-leaf-materials.png)  
 ^ Stem and leaves material implemented
 
-Overall, the results are not fantastic, approaching realism being very hard. It doesn't matter too much however as I didn't plan on having the focus be on the stem.
+Overall, the results are not fantastic, approaching realism being very hard. It doesn't matter too much however as I didn't plan on having the focus be on the stem and the scenery won't be realistic.
 
-Here are the render steps:
+### **Props**
 
-<!-- ![0](./Render_Progression/00-first-flower.png) -->
-<!-- ![1](./Render_Progression/01-flower-velvet-test.png) -->
-<!-- ![2](./Render_Progression/02-flower-velvet-test.png) -->
-<!-- ![3](./Render_Progression/03-flower-velvet-test.png) -->
-<!-- ![4](./Render_Progression/04-sim-static-texture.png) -->
-<!-- ![5](./Render_Progression/05-sim-dynamic-texture.png) -->
-<!-- ![6](./Render_Progression/06-sim-texture-colours.png) -->
-<!-- ![7](./Render_Progression/07-sim-transparency.png) -->
-<!-- ![8](./Render_Progression/08-sim-transparency.png) -->
-<!-- ![9](./Render_Progression/09-stem-thorns.png) -->
-<!-- ![10](./Render_Progression/10-stem-leaf-materials.png) -->
-![11](./Render_Progression/11-table.png)
-![12](./Render_Progression/12-glass-bell.png)
-![13](./Render_Progression/13-volumetric-glow.png)
-![14](./Render_Progression/14-volumetric-glow.png)
-![15](./Render_Progression/15-room.png)
-![16](./Render_Progression/16-room.png)
-![17](./Render_Progression/17-room.png)
-![18](./Render_Progression/18-final-render.png)
+My idea of the scene was fairly simple: the rose levitating in a glass bell on an altar table, similar to what can be found in the original Beauty and the Beast.
+
+![Beauty and the Beast reference](https://static.wikia.nocookie.net/disney/images/f/fb/The_Enchanted_Rose.png/revision/latest?cb=20160707142124)  
+[Source](https://disney.fandom.com/wiki/The_Enchanted_Rose)
+
+I started with the table. Rather than take the previous picture as a reference, I thought I should think about how I pictured it in my mind to simplify it. I just pictured what a small table holding a rose could look like and went with it. I took inspiration from things I've seen in churches or in old people's houses, that kind of things. In the end making the model was fairly simple. A good combination of insets, translations, rotations and scaling gives me the table itself and its stand. Then I make a second object for one foot, just extruding big squares and subdividing afterwards. I duplicate the foot twice, place the feet and voilà.
+
+With the model done, I tried to figure out how to make a wood material. With the help of a few tutorials and fiddling, I was able to make a very satisfying material that I just applied to the table, giving the following results:
+
+![Table](./Blender_Project_Files/Process_Pics/table.png)  
+![Table with wood material](./Render_Progression/11-table.png)
+
+With the table done, I started working on the glass bell. I copied the one in the reference from Beauty and the Beast. It was fairly simple: concatenating a cylinder and a sphere, adding three small spheres on top and applying a solidify modifier and it was done.  
+The material was even simpler than the modelling: max transmission, slight transmission roughness, slight magenta/purple emission and no roughness. All that is applied on the classic principled BSDF.  
+Here is the result of that process:
+
+![Table with rose and glass bell](./Render_Progression/12-glass-bell.png)
+
+I wanted to add some glow to the flower, similar to what can be seen in the reference. To achieve that I tested adding some volume scattering inside the bell and some light emission from the flower. I gave the volume a pinkish color similar to the rose and put the volume inside the bell. Sadly, the results felt awkward. I didn't realise I could put the volume scatter on the bell itself and the emission messed up the colors. Also, because of the tutorial I watched for the volumes, I though that only mesh primitives could use them. That is why you can see the cylinder in the bell pretty well. Finally, I didn't realise that the scene was lit much more than it would be in the final render. I removed the volume at that time but I ended up fixing it on the final render. Here are the tests I did:
+
+![Volume scatter test 1](./Render_Progression/13-volumetric-glow.png)  
+![Volume scatter test 2](./Render_Progression/14-volumetric-glow.png)
+
+### **Room, Lighting and background**
+
+From there, I had to finish setting up the scene. I enclosed everything in a box with a simple window, put a sun outside, a background image for the camera and started working on the material for the walls.
+
+I used a brick texture that I modified to get a base and then used different noise to add roughness and approximate stone. It was fairly simple thanks to tutorials and the flexibility of Blender's materials. It is however very disappointing once you focus on it, but because of time constraints, I need to move on quickly to the animation assignment.
+
+Once the walls looked good enough, I added a light inside the room.
+
+![Room scene](./Render_Progression/15-room.png)
+
+I also noticed that the emission on the flower was too bright and hid the intricacy of the model. I turned it down so that the petals could individually stand out.
+
+![Room with less emission](./Render_Progression/16-room.png)
+
+Sadly, this resulted in a slight change in the glow the petals had. There are solutions to this, notably compositing. Compositing would allow me to process the render image and add some bloom to it. This would make the whole scene more blurry however. The perfect solution would have been to remove the emission and use subsurface reflections to make the flower glow. However, to make it glow enough, I would need a much stronger light shining on the rose. This would ruin the scene lighting, unless I could apply a light only to a specific object. This feature is called light linking and is not yet available in Blender (it is currently in development). I will have to stick to slight emission.
+
+The last iteration looked nice but the renders felt very sharp. I needed to dim the contrast without dimming the scene. A fellow student pointed out I could try having several light sources. This was exactly what I needed since I could then put 2 "torches" (point lights) to have the same light intensity but weaker and more subtle shadows. This is the result:
+
+![Room lit by 2 different light sources](./Render_Progression/17-room.png)
+
+I would have liked to play more with the light sources, giving them different colours, maybe adding some volumetric fog. I needed to finish this render though and will have to come back to it later.
+
+The last modification I did was adding back the volume scatter to the bell. I showed the render with and without the glow to several people. They agreed that the tint given by the volume made the rose look more ethereal and gave a magic-y touch to the bell. Satisfied with those comments, I made the final render:
+
+![Final Render](./Render_Progression/18-final-render.png)
