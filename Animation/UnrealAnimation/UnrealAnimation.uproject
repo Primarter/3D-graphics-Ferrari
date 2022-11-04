@@ -10,6 +10,22 @@
 			"TargetAllowList": [
 				"Editor"
 			]
+		},
+		{
+			"Name": "HDRIBackdrop",
+			"Enabled": true
+		},
+		{
+			"Name": "ChaosCaching",
+			"Enabled": true
+		},
+		{
+			"Name": "MovieRenderPipeline",
+			"Enabled": true
+		},
+		{
+			"Name": "AvidDNxMedia",
+			"Enabled": true
 		}
 	]
 }
