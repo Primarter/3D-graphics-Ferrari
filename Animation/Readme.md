@@ -58,4 +58,4 @@ Unreal used to have a cinematic capture built-in feature. It was fast to iterate
 
 I also uploaded the video with a better quality to YouTube for ease of access. Click on the link to watch it:
 
-[The Beast and Beauty](https://www.youtube.com/watch?v=VID)
+[The Beast and Beauty](https://youtu.be/XCkLtAdPJbk)
