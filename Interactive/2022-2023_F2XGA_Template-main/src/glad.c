@@ -7,7 +7,7 @@
     APIs: gl=4.5, gles1=1.0, gles2=2.0, glsc2=2.0
     Profile: compatibility
     Extensions:
-        
+
     Loader: True
     Local files: False
     Omit khrplatform: False

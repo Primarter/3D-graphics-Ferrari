@@ -14,27 +14,27 @@ using namespace std;
 #define BUFFER_OFFSET(i) ((char *)NULL + (i))
 
 class Content {
-	public:
-		Content();
+    public:
+        Content();
 
-		pair<GLuint, std::map<int, GLuint>> vaoAndEbos;
-		Model model;
+        pair<GLuint, map<int, GLuint>> vaoAndEbos;
+        Model model;
 
-		void LoadGLTF(string filename);
-		void DrawModel(const pair<GLuint, map<int, GLuint>> &vaoAndEbos, Model &model);
+        void LoadGLTF(string filename);
+        void DrawModel(const pair<GLuint, map<int, GLuint>> &vaoAndEbos, Model &model);
 
-	virtual ~Content();
-	protected:
+    virtual ~Content();
+    protected:
 
-	private:
+    private:
 
-		// Loading
-		pair<GLuint, map<int, GLuint>> BindModel(Model &model);
-		void BindModelNodes(map<int, GLuint> &vbos, Model &model, Node &node);
-		void BindMesh(map<int, GLuint> &vbos, Model &model, Mesh &mesh);
+        // Loading
+        pair<GLuint, map<int, GLuint>> BindModel(Model &model);
+        void BindModelNodes(map<int, GLuint> &vbos, Model &model, Node &node);
+        void BindMesh(map<int, GLuint> &vbos, Model &model, Mesh &mesh);
 
-		// Drawing
+        // Drawing
 
-		void DrawModelNodes(const pair<GLuint, map<int, GLuint>> &vaoAndEbos, Model &model, Node &node);
-		void DrawMesh(const map<int, GLuint> &vbos, Model &model, Mesh &mesh);
+        void DrawModelNodes(const pair<GLuint, map<int, GLuint>> &vaoAndEbos, Model &model, Node &node);
+        void DrawMesh(const map<int, GLuint> &vbos, Model &model, Mesh &mesh);
 };
