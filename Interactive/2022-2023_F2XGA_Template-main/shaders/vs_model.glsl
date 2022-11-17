@@ -2,13 +2,13 @@
 
 layout (location = 0) in vec3 in_vertex;
 layout (location = 1) in vec3 in_normals;
-layout (location = 2) in vec2 in_tc;
+layout (location = 2) in vec2 in_uv;
 
 out VS_OUT
 {
     vec3 vertex;
     vec3 normals;
-    vec2 tc;
+    vec2 uv;
 } vs_out;
 
 uniform mat4 model_matrix;
@@ -21,5 +21,5 @@ void main(void)
 
     vs_out.vertex = in_vertex;
     vs_out.normals = in_normals;
-    vs_out.tc = in_tc;
+    vs_out.uv = in_uv;
 }

@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.9)
 project(3DGraphics DESCRIPTION "test project")
 
-set(PROJECT_ROOT ./)
+set(PROJECT_ROOT .)
 
 set(CMAKE_C_COMPILER g++)
 set(CMAKE_CXX_COMPILER g++)
@@ -14,15 +14,19 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ..)
 include(GNUInstallDirs)
 
 set(SRC_FILES
-    ${PROJECT_ROOT}/main.cpp
-    ${PROJECT_ROOT}/src/Camera.cpp
-    ${PROJECT_ROOT}/src/Debugger.cpp
-    ${PROJECT_ROOT}/src/glad.c
-    ${PROJECT_ROOT}/src/GLApp.cpp
-    ${PROJECT_ROOT}/src/Model.cpp
-    ${PROJECT_ROOT}/src/Pipeline.cpp
-    ${PROJECT_ROOT}/src/Shader.cpp
+    ${PROJECT_ROOT}/src/main.cpp
+    ${PROJECT_ROOT}/src/Scene.cpp
 
+    ${PROJECT_ROOT}/src/GLApp/GLApp.cpp
+    ${PROJECT_ROOT}/src/GLApp/Camera.cpp
+    ${PROJECT_ROOT}/src/GLApp/Debugger.cpp
+    ${PROJECT_ROOT}/src/GLApp/Model.cpp
+    ${PROJECT_ROOT}/src/GLApp/Pipeline.cpp
+    ${PROJECT_ROOT}/src/GLApp/Shader.cpp
+)
+
+set(SRC_LIBS
+    ${PROJECT_ROOT}/include/glad/glad.c
     ${PROJECT_ROOT}/include/imgui/imgui.cpp
     ${PROJECT_ROOT}/include/imgui/imgui_demo.cpp
     ${PROJECT_ROOT}/include/imgui/imgui_draw.cpp
@@ -35,13 +39,21 @@ set(SRC_FILES
 
 add_executable(3DGraphics
     ${SRC_FILES}
+    ${SRC_LIBS}
 )
 
-target_compile_options(3DGraphics PRIVATE -W -Wall -Wextra -Wno-missing-field-initializers -std=c++2a -L./lib)
+target_compile_options(3DGraphics
+    PRIVATE -W -Wall -Wextra -Wno-missing-field-initializers -std=c++2a
+)
 
 target_include_directories(3DGraphics
     PRIVATE
         ${PROJECT_ROOT}/include/
 )
 
-target_link_libraries(3DGraphics glfw3 opengl32 glu32 gdi32)
+target_link_directories(3DGraphics
+    PRIVATE
+        ${PROJECT_ROOT}/lib/
+)
+
+target_link_libraries(3DGraphics opengl32 glu32 gdi32 libglfw3.a)

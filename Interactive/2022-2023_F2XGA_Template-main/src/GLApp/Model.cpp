@@ -140,14 +140,14 @@ namespace GLApp {
     // bind models
     void Model::BindModelNodes(map<int, GLuint> &vbos, tinygltf::Model &model, tinygltf::Node &node)
     {
-        if ((node.mesh >= 0) && (node.mesh < model.meshes.size()))
+        if ((node.mesh >= 0) && (static_cast<size_t>(node.mesh) < model.meshes.size()))
         {
             BindMesh(vbos, model, model.meshes[node.mesh]);
         }
 
         for (size_t i = 0; i < node.children.size(); i++)
         {
-            assert((node.children[i] >= 0) && (node.children[i] < model.nodes.size()));
+            assert((node.children[i] >= 0) && (static_cast<size_t>(node.children[i]) < model.nodes.size()));
             BindModelNodes(vbos, model, model.nodes[node.children[i]]);
         }
     }
@@ -163,7 +163,7 @@ namespace GLApp {
         const tinygltf::Scene &scene = model.scenes[model.defaultScene];
         for (size_t i = 0; i < scene.nodes.size(); ++i)
         {
-            assert((scene.nodes[i] >= 0) && (scene.nodes[i] < model.nodes.size()));
+            assert((scene.nodes[i] >= 0) && (static_cast<size_t>(scene.nodes[i]) < model.nodes.size()));
             BindModelNodes(vbos, model, model.nodes[scene.nodes[i]]);
         }
 
@@ -205,7 +205,7 @@ namespace GLApp {
     // recursively draw node and children nodes of model
     void Model::DrawModelNodes(const pair<GLuint, map<int, GLuint>> &vaoAndEbos, tinygltf::Model &model, tinygltf::Node &node)
     {
-        if ((node.mesh >= 0) && (node.mesh < model.meshes.size()))
+        if ((node.mesh >= 0) && (static_cast<size_t>(node.mesh) < model.meshes.size()))
         {
             DrawMesh(vaoAndEbos.second, model, model.meshes[node.mesh]);
         }
