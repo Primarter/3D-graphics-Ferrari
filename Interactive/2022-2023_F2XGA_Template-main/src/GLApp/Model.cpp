@@ -3,29 +3,29 @@
 
 namespace GLApp {
 
-    void Model::LoadGLTF(string filename)
+    void Model::LoadGLTF(std::string filename)
     {
 
-        cout << "Trying to load model " << filename << "\n";
+        std::cout << "Trying to load model " << filename << "\n";
 
         tinygltf::TinyGLTF loader;
-        string err;
-        string warn;
+        std::string err;
+        std::string warn;
 
         bool res = loader.LoadASCIIFromFile(&model, &err, &warn, filename);
-        if (!warn.empty()) cout << "WARNING - GLTF: " << warn << endl;
-        if (!err.empty())  cout << "ERROR - GLTF: " << err << endl;
+        if (!warn.empty()) std::cout << "WARNING - GLTF: " << warn << std::endl;
+        if (!err.empty())  std::cout << "ERROR - GLTF: " << err << std::endl;
 
         if (!res)
-            cout << "ERROR - Failed to load glTF: " << filename << endl;
+            std::cout << "ERROR - Failed to load glTF: " << filename << std::endl;
         else
-            cout << "OK - Loaded glTF: " << filename << endl;
+            std::cout << "OK - Loaded glTF: " << filename << std::endl;
 
         vaoAndEbos = BindModel(model);
     }
 
 
-    void Model::BindMesh(map<int, GLuint> &vbos, tinygltf::Model &model, tinygltf::Mesh &mesh)
+    void Model::BindMesh(std::map<int, GLuint> &vbos, tinygltf::Model &model, tinygltf::Mesh &mesh)
     {
         for (size_t i = 0; i < model.bufferViews.size(); ++i)
         {
@@ -34,25 +34,17 @@ namespace GLApp {
             { // TODO impl drawarrays
                 std::cout << "WARN: bufferView.target is zero" << std::endl;
                 continue; // Unsupported bufferView.
-                        /*
-                            From spec2.0 readme:
-                            https://github.com/KhronosGroup/glTF/tree/master/specification/2.0
-                                    ... drawArrays function should be used with a count equal to
-                            the count            property of any of the accessors referenced by the
-                            attributes            property            (they are all equal for a given
-                            primitive).
-                        */
             }
 
             const tinygltf::Buffer &buffer = model.buffers[bufferView.buffer];
-            cout << "bufferview.target " << bufferView.target << endl;
+            std::cout << "bufferview.target " << bufferView.target << std::endl;
 
             GLuint vbo;
             glGenBuffers(1, &vbo);
             vbos[i] = vbo;
             glBindBuffer(bufferView.target, vbo);
 
-            cout << "buffer.data.size = " << buffer.data.size()
+            std::cout << "buffer.data.size = " << buffer.data.size()
                     << ", bufferview.byteOffset = " << bufferView.byteOffset
                     << std::endl;
 
@@ -138,7 +130,7 @@ namespace GLApp {
     }
 
     // bind models
-    void Model::BindModelNodes(map<int, GLuint> &vbos, tinygltf::Model &model, tinygltf::Node &node)
+    void Model::BindModelNodes(std::map<int, GLuint> &vbos, tinygltf::Model &model, tinygltf::Node &node)
     {
         if ((node.mesh >= 0) && (static_cast<size_t>(node.mesh) < model.meshes.size()))
         {
@@ -152,9 +144,9 @@ namespace GLApp {
         }
     }
 
-    pair<GLuint, map<int, GLuint>> Model::BindModel(tinygltf::Model &model)
+    std::pair<GLuint, std::map<int, GLuint>> Model::BindModel(tinygltf::Model &model)
     {
-        map<int, GLuint> vbos;
+        std::map<int, GLuint> vbos;
         GLuint vao;
 
         glGenVertexArrays(1, &vao);
@@ -187,7 +179,7 @@ namespace GLApp {
         return {vao, vbos};
     }
 
-    void Model::DrawMesh(const map<int, GLuint> &vbos, tinygltf::Model &model, tinygltf::Mesh &mesh)
+    void Model::DrawMesh(const std::map<int, GLuint> &vbos, tinygltf::Model &model, tinygltf::Mesh &mesh)
     {
         for (size_t i = 0; i < mesh.primitives.size(); ++i)
         {
@@ -203,7 +195,7 @@ namespace GLApp {
     }
 
     // recursively draw node and children nodes of model
-    void Model::DrawModelNodes(const pair<GLuint, map<int, GLuint>> &vaoAndEbos, tinygltf::Model &model, tinygltf::Node &node)
+    void Model::DrawModelNodes(const std::pair<GLuint, std::map<int, GLuint>> &vaoAndEbos, tinygltf::Model &model, tinygltf::Node &node)
     {
         if ((node.mesh >= 0) && (static_cast<size_t>(node.mesh) < model.meshes.size()))
         {
@@ -215,7 +207,7 @@ namespace GLApp {
         }
     }
 
-    void Model::Draw(const pair<GLuint, map<int, GLuint>> &vaoAndEbos, tinygltf::Model &model)
+    void Model::Draw(const std::pair<GLuint, std::map<int, GLuint>> &vaoAndEbos, tinygltf::Model &model)
     {
         glBindVertexArray(vaoAndEbos.first);
 

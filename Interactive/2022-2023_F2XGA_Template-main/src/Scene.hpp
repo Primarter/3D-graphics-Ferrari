@@ -2,8 +2,9 @@
 
 #include "GLApp/IScene.hpp"
 #include "GLApp/Model.hpp"
-#include "GLApp/Pipeline.hpp"
 #include "GLApp/Debugger.hpp"
+#include "GLApp/Shader.hpp"
+#include "GLApp/Camera.hpp"
 
 class Scene : public GLApp::IScene {
 
@@ -23,19 +24,18 @@ class Scene : public GLApp::IScene {
         void onMouseWheelCallback(GLFWwindow* window, double xoffset, double yoffset) final;
 
         int sceneId = 0;
-        bool running = true;                                        // Are we still running our main loop
-        vec3 cameraPosition = vec3(0.0f, 0.0f, 5.0f);               // Where is our camera
-        vec3 cameraFront = vec3(0.0f, 0.0f, -1.0f);                 // Camera front vector
-        vec3 cameraUp = vec3(0.0f, 1.0f, 0.0f);                     // Camera up vector
-        float currentTime = 0.0f;                                   // Framerate
-        float deltaTime = 0.0f;                                     // time passed
-        float lastTime = 0.0f;                                      // Used to calculate Frame rate
+        bool running = true;
+        GLApp::Camera camera = GLApp::Camera(vec3(0.0f, 0.0f, 5.0f), vec3(0.0f, 1.0f, 0.0f));
 
-        GLApp::Pipeline pipeline;                                          // Pipeline plus some shaders.
-        GLApp::Model content;                                              // Content loader (+drawing).
-        GLApp::Debugger debugger;                                          // Debugger to use for callbacks ( Win64 - openGLDebugCallback() ) or manual calls ( Apple - glCheckError() )
+        float currentTime = 0.0f;
+        float deltaTime = 0.0f;
+        float lastTime = 0.0f;
 
-        vec3 modelPosition;                                         // Model position
-        vec3 modelRotation;                                         // Model rotation
+        GLApp::Shader shader;
+        GLApp::Model model;
+        GLApp::Debugger debugger;
+
+        vec3 modelPosition;
+        vec3 modelRotation;
 
 };

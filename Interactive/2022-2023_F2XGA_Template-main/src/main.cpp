@@ -11,12 +11,15 @@ int main()
     GLApp::Context context;
     Scene scn;
 
+
     scn.sceneId = context.addScene(&scn);
 
-    if (context.init() == GLApp::FAILURE)
-        return 1;
+    if (context.init() == GLApp::FAILURE) {
+        std::cout << "context.init failed." << std::endl;
+        return GLApp::FAILURE;
+    }
 
-    cout << endl << "Starting main loop and rendering..." << endl;
+    std::cout << std::endl << "Starting main loop and rendering." << std::endl;
 
     context.run();
 

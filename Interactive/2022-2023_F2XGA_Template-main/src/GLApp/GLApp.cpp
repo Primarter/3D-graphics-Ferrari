@@ -21,11 +21,11 @@ void GLApp::Context::hintsGLFW()
 
 GLApp::Status GLApp::Context::init(size_t defaultScene)
 {
-    cout << endl << "===" << endl << "3D Graphics and Animation - Running..." << endl;
+    std::cout << std::endl << "===" << std::endl << "3D Graphics and Animation - Running..." << std::endl;
 
     if (!glfwInit()) // Check if GLFW is working, if not then stop all
     {
-        cout << "Could not initialise GLFW...";
+        std::cout << "Could not initialise GLFW...";
         return FAILURE;
     }
 
@@ -41,7 +41,7 @@ GLApp::Status GLApp::Context::init(size_t defaultScene)
     window = glfwCreateWindow(windowWidth, windowHeight, windowTitle, NULL, NULL);
     if (!window) // Test if Window or OpenGL context creation failed
     {
-        cout << "Could not initialise GLFW...";
+        std::cout << "Could not initialise GLFW...";
         glfwTerminate();
         return FAILURE;
     }
@@ -89,9 +89,9 @@ GLApp::Status GLApp::Context::init(size_t defaultScene)
     // glfwWindowHint(GLFW_SAMPLES, 2); // Multisampling - covered in lectures - https://www.khronos.org/opengl/wiki/Multisampling
 
         // Output some debugging information
-    cout << "VENDOR: " << (char*)glGetString(GL_VENDOR) << endl;
-    cout << "VERSION: " << (char*)glGetString(GL_VERSION) << endl;
-    cout << "RENDERER: " << (char*)glGetString(GL_RENDERER) << endl;
+    std::cout << "VENDOR: " << (char*)glGetString(GL_VENDOR) << std::endl;
+    std::cout << "VERSION: " << (char*)glGetString(GL_VERSION) << std::endl;
+    std::cout << "RENDERER: " << (char*)glGetString(GL_RENDERER) << std::endl;
 
     glFrontFace(GL_CCW);
     glCullFace(GL_BACK);

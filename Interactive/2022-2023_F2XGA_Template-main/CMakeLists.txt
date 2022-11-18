@@ -21,7 +21,6 @@ set(SRC_FILES
     ${PROJECT_ROOT}/src/GLApp/Camera.cpp
     ${PROJECT_ROOT}/src/GLApp/Debugger.cpp
     ${PROJECT_ROOT}/src/GLApp/Model.cpp
-    ${PROJECT_ROOT}/src/GLApp/Pipeline.cpp
     ${PROJECT_ROOT}/src/GLApp/Shader.cpp
 )
 

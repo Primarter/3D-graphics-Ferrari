@@ -14,10 +14,10 @@
 #include <glm/gtx/transform.hpp> // Help us with transforms
 using namespace glm;
 
-#include "Shader.hpp"
-#include "Pipeline.hpp"         // Setup pipeline and load shaders.
-#include "Model.hpp"            // Setup content loader and drawing functions - https://github.com/KhronosGroup/glTF - https://github.com/syoyo/tinygltf
-#include "Debugger.hpp"         // Setup debugger functions.
+#include "Debugger.hpp"
+
+#include <vector>
+#include <iostream>
 
 #define UNUSED __attribute__((unused))
 

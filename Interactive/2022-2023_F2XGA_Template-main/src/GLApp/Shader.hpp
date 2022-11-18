@@ -13,13 +13,20 @@ namespace GLApp {
 class Shader
 {
     public:
-        unsigned int ID;
+        int ID = -1;
+
+        bool error = false;
 
         // Constructor generates the shader on the fly
-        Shader(const char* vertexPath, const char* fragmentPath, const char* geometryPath = nullptr);
+        Shader(void) = default;
+        Shader(const char* _vertexPath, const char* _fragmentPath, const char* _geometryPath = nullptr);
+
+        void init(const char* _vertexPath, const char* _fragmentPath, const char* _geometryPath = nullptr);
+
+        void reloadShaders(void);
 
         // Activate the shader
-        void use();
+        void use(void);
 
         // Set uniforms functions
         void setBool(const std::string &name, bool value) const;
@@ -45,6 +52,8 @@ class Shader
 
     private:
         void checkCompileErrors(GLuint shader, std::string type);
+
+        std::string vertexPath, fragmentPath, geometryPath;
 };
 
 }
