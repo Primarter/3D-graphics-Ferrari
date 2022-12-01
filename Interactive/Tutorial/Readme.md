@@ -1,20 +1,3 @@
----
-title: "CMake tutorial"
-author: [Camille Ferrari]
-date: "2022-12-1"
-keywords: [CMake, MinGW, Tutorial]
-titlepage: true
-titlepage-color: "0a0c10"
-titlepage-rule-color: "FF8E27"
-colorlinks: true
-# xcolor doc for all colors
-linkcolor: BurntOrange
-filecolor: BurntOrange
-citecolor: BurntOrange
-urlcolor: BurntOrange
-toccolor: BurntOrange
-...
-
 # Building process
 
 This build system is based on CMake, MinGW and MinGW Makefile. You will be installing MinGW with the extension built into it as well as CMake.
