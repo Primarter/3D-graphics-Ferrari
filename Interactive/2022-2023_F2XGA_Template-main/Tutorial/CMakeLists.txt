@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.9)
-project(3DGraphics DESCRIPTION "3D Graphics interactive assignment")
+project(3DGraphics DESCRIPTION "3D Graphics interactive assignment, build system by Camille Ferrari")
 
 set(PROJECT_ROOT .)
 
@@ -14,18 +14,14 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ..)
 include(GNUInstallDirs)
 
 set(SRC_FILES
-    ${PROJECT_ROOT}/src/main.cpp
-    ${PROJECT_ROOT}/src/Scene.cpp
-
-    ${PROJECT_ROOT}/src/GLApp/GLApp.cpp
-    ${PROJECT_ROOT}/src/GLApp/Camera.cpp
-    ${PROJECT_ROOT}/src/GLApp/Debugger.cpp
-    ${PROJECT_ROOT}/src/GLApp/Model.cpp
-    ${PROJECT_ROOT}/src/GLApp/Shader.cpp
+    ${PROJECT_ROOT}/Source.cpp
+    ${PROJECT_ROOT}/src/Content.cpp
+    ${PROJECT_ROOT}/src/Pipeline.cpp
+    ${PROJECT_ROOT}/src/Debugger.cpp
 )
 
 set(SRC_LIBS
-    ${PROJECT_ROOT}/include/glad/glad.c
+    ${PROJECT_ROOT}/src/glad.c # glad.c shouldn't be in src but the template has it here by default
     ${PROJECT_ROOT}/include/imgui/imgui.cpp
     ${PROJECT_ROOT}/include/imgui/imgui_demo.cpp
     ${PROJECT_ROOT}/include/imgui/imgui_draw.cpp

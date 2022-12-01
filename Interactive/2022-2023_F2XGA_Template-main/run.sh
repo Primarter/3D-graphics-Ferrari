@@ -1,1 +1,2 @@
-g++ -std=c++2a -I./include -L./lib ./main.cpp src/*.cpp src/glad.c ./include/imgui/imgui.cpp ./include/imgui/imgui_demo.cpp ./include/imgui/imgui_draw.cpp ./include/imgui/imgui_widgets.cpp ./include/imgui/imgui_tables.cpp ./include/imgui/imgui_impl_opengl3.cpp ./include/imgui/imgui_impl_glfw.cpp ./include/tinygltf/tiny_gltf.cc -lglfw3 -lopengl32 -lglu32 -lgdi32 -o test.exe
+mkdir ./build_tools/build
+cd ./build_tools/build && cmake ../../ -G "Unix Makefiles" && cmake --build . && move ../3DGraphics ../.. && cd ../.. && ./3DGraphics
