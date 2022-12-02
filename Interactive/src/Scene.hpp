@@ -33,6 +33,7 @@ class Scene : public GLApp::IScene {
 
         GLApp::Shader shader;
         GLApp::Model model;
+        GLApp::Model model1;
         GLApp::Debugger debugger;
 
         vec3 modelPosition;

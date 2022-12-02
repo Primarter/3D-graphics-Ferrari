@@ -1,0 +1,14 @@
+title: "CMake tutorial"
+author: [Camille Ferrari]
+date: "2022-12-1"
+keywords: []
+titlepage: true
+titlepage-color: "0a0c10"
+titlepage-rule-color: "FF8E27"
+colorlinks: true
+# xcolor doc for all colors
+linkcolor: BurntOrange
+filecolor: BurntOrange
+citecolor: BurntOrange
+urlcolor: BurntOrange
+toccolor: BurntOrange

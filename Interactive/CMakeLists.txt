@@ -3,7 +3,7 @@ project(3DGraphics DESCRIPTION "3D Graphics interactive assignment")
 
 set(PROJECT_ROOT .)
 
-set(CMAKE_C_COMPILER g++)
+set(CMAKE_C_COMPILER gcc)
 set(CMAKE_CXX_COMPILER g++)
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_EXTENSIONS OFF)
@@ -42,7 +42,7 @@ add_executable(3DGraphics
 )
 
 target_compile_options(3DGraphics
-    PRIVATE -W -Wall -Wextra -Wno-missing-field-initializers -std=c++2a
+    PRIVATE -W -Wall -Wextra -Wno-missing-field-initializers
 )
 
 target_include_directories(3DGraphics

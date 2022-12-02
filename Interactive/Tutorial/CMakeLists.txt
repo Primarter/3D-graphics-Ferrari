@@ -1,13 +1,11 @@
 cmake_minimum_required(VERSION 3.9)
+set(CMAKE_CXX_STANDARD 20)
+set(CMAKE_CXX_EXTENSIONS OFF)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
 project(3DGraphics DESCRIPTION "3D Graphics interactive assignment, build system by Camille Ferrari")
 
 set(PROJECT_ROOT .)
 
-set(CMAKE_C_COMPILER g++)
-set(CMAKE_CXX_COMPILER g++)
-set(CMAKE_CXX_STANDARD 20)
-set(CMAKE_CXX_EXTENSIONS OFF)
-set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ..)
 
@@ -38,7 +36,7 @@ add_executable(3DGraphics
 )
 
 target_compile_options(3DGraphics
-    PRIVATE -W -Wall -Wextra -Wno-missing-field-initializers -std=c++2a
+    PRIVATE -W -Wall -Wextra -Wno-missing-field-initializers
 )
 
 target_include_directories(3DGraphics

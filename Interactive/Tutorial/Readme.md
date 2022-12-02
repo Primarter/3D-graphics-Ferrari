@@ -4,7 +4,7 @@ This build system is based on CMake, MinGW and MinGW Makefile. You will be insta
 
 **This hasn't been tested on the lab's machines and probably won't work on there. I made this for your own personal computers.**
 
-This tutorial assumes you don't have MinGW installed, if you do, I recommend uninstalling and following this tutorial to make sure everything goes right. I will update this tutorial to add a version that avoids uninstalling.
+This tutorial assumes you don't have MinGW installed, if you do, I recommend uninstalling and following this tutorial to make sure everything goes right.
 
 ## Setting up everything
 

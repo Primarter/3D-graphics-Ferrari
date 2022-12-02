@@ -3,17 +3,15 @@
 void Scene::setup(GLApp::Context& ctx)
 {
     cout << endl << "Loading content..." << endl;
-    this->model.LoadGLTF("./assets/dog.gltf");
+    this->model.LoadGLTF("./assets/table.gltf");
+    // this->model1.LoadGLTF("./assets/dog.gltf");
+
+    this->model.transform.scale = {1.2, 1.2, 1.2};
 
     // this->pipeline.CreatePipeline();
     // this->pipeline.LoadShaders("shaders/vs_model.glsl", "shaders/fs_model.glsl");
 
     this->shader.init("shaders/vs_model.glsl", "shaders/fs_model.glsl");
-
-    // Start from the centre
-    this->modelPosition = glm::vec3(0.0f, 0.0f, 0.0f);
-    this->modelRotation = glm::vec3(0.0f, 0.0f, 0.0f);
-
 
     // Get the correct size in pixels - E.g. if retina display or monitor scaling
     glfwGetFramebufferSize(ctx.window, &ctx.windowWidth, &ctx.windowHeight);
@@ -26,10 +24,10 @@ void Scene::setup(GLApp::Context& ctx)
 
 void Scene::update(GLApp::Context& ctx)
 {
-    if (ctx.keyStatus[GLFW_KEY_LEFT]) this->modelRotation.y += 0.05f;
-    if (ctx.keyStatus[GLFW_KEY_RIGHT]) this->modelRotation.y -= 0.05f;
-    if (ctx.keyStatus[GLFW_KEY_UP]) this->modelRotation.x += 0.05f;
-    if (ctx.keyStatus[GLFW_KEY_DOWN]) this->modelRotation.x -= 0.05f;
+    if (ctx.keyStatus[GLFW_KEY_LEFT]) this->model.transform.rotation.y += 0.05f;
+    if (ctx.keyStatus[GLFW_KEY_RIGHT]) this->model.transform.rotation.y -= 0.05f;
+    if (ctx.keyStatus[GLFW_KEY_UP]) this->model.transform.rotation.x += 0.05f;
+    if (ctx.keyStatus[GLFW_KEY_DOWN]) this->model.transform.rotation.x -= 0.05f;
     // if (ctx.keyStatus[GLFW_KEY_W]) this->modelPosition.z += 0.10f;
     // if (ctx.keyStatus[GLFW_KEY_S]) this->modelPosition.z -= 0.10f;
 
@@ -65,20 +63,15 @@ void Scene::render(GLApp::Context& ctx)
     glm::mat4 viewMatrix = camera.GetViewMatrix();
 
     // Do some translations, rotations and scaling
-    glm::mat4 modelMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(this->modelPosition.x, this->modelPosition.y, this->modelPosition.z));
-
-    modelMatrix = glm::rotate(modelMatrix, this->modelRotation.x, glm::vec3(1.0f, 0.0f, 0.0f));
-    modelMatrix = glm::rotate(modelMatrix, this->modelRotation.y, glm::vec3(0.0f, 1.0f, 0.0f));
-    modelMatrix = glm::scale(modelMatrix, glm::vec3(1.2f, 1.2f, 1.2f));
 
     // Use our shader programs
     this->shader.use();
 
-    this->shader.setMat4("model_matrix", modelMatrix);
     this->shader.setMat4("view_matrix", viewMatrix);
     this->shader.setMat4("proj_matrix", ctx.projMatrix);
 
-    this->model.Draw(this->model.vaoAndEbos, this->model.model);
+    this->model.Draw(this->shader);
+    // this->model1.Draw();
 
     #if defined(__APPLE__)
         glCheckError();

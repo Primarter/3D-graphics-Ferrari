@@ -1,6 +1,5 @@
 #include "Model.hpp"
 
-
 namespace GLApp {
 
     void Model::LoadGLTF(std::string filename)
@@ -21,7 +20,7 @@ namespace GLApp {
         else
             std::cout << "OK - Loaded glTF: " << filename << std::endl;
 
-        vaoAndEbos = BindModel(model);
+        BindModel(model);
     }
 
 
@@ -90,7 +89,7 @@ namespace GLApp {
             if (model.textures.size() > 0)
             {
                 // fixme: Use material's baseColor
-                tinygltf::Texture &tex = model.textures[0];
+                tinygltf::Texture &tex = model.textures[1];
 
                 if (tex.source > -1)
                 {
@@ -144,19 +143,22 @@ namespace GLApp {
         }
     }
 
-    std::pair<GLuint, std::map<int, GLuint>> Model::BindModel(tinygltf::Model &model)
+    void Model::BindModel(tinygltf::Model &model)
     {
         std::map<int, GLuint> vbos;
-        GLuint vao;
-
-        glGenVertexArrays(1, &vao);
-        glBindVertexArray(vao);
 
         const tinygltf::Scene &scene = model.scenes[model.defaultScene];
         for (size_t i = 0; i < scene.nodes.size(); ++i)
         {
+            GLuint vao;
+
+            glGenVertexArrays(1, &vao);
+            glBindVertexArray(vao);
+
+
             assert((scene.nodes[i] >= 0) && (static_cast<size_t>(scene.nodes[i]) < model.nodes.size()));
             BindModelNodes(vbos, model, model.nodes[scene.nodes[i]]);
+            vaoAndEbos[vao] = vbos;
         }
 
         glBindVertexArray(0);
@@ -175,8 +177,6 @@ namespace GLApp {
                 ++it;
             }
         }
-
-        return {vao, vbos};
     }
 
     void Model::DrawMesh(const std::map<int, GLuint> &vbos, tinygltf::Model &model, tinygltf::Mesh &mesh)
@@ -194,29 +194,63 @@ namespace GLApp {
         }
     }
 
+    static glm::mat4 getNodeTransformMatrix(const tinygltf::Node &node, glm::mat4 parentMatrix)
+    {
+        glm::mat4 childMatrix = glm::mat4(1.0f);
+
+        if (node.translation.size() != 0)
+            childMatrix = glm::translate(childMatrix, glm::vec3(node.translation[0], node.translation[1], node.translation[2]));
+        if (node.rotation.size() != 0)
+        {
+            childMatrix = glm::rotate(childMatrix, (float)node.rotation[0], glm::vec3(1.0f, 0.0f, 0.0f));
+            childMatrix = glm::rotate(childMatrix, (float)node.rotation[1], glm::vec3(0.0f, 1.0f, 0.0f));
+            childMatrix = glm::rotate(childMatrix, (float)node.rotation[2], glm::vec3(0.0f, 0.0f, 1.0f));
+        }
+        if (node.scale.size() != 0)
+            childMatrix = glm::scale(childMatrix, glm::vec3(node.scale[0], node.scale[1], node.scale[2]));
+        childMatrix = parentMatrix * childMatrix;
+        return childMatrix;
+    }
+
     // recursively draw node and children nodes of model
-    void Model::DrawModelNodes(const std::pair<GLuint, std::map<int, GLuint>> &vaoAndEbos, tinygltf::Model &model, tinygltf::Node &node)
+    void Model::DrawModelNodes(const std::map<int, GLuint> &vbos, tinygltf::Model &model, tinygltf::Node &node, glm::mat4 &nodeMatrix)
     {
         if ((node.mesh >= 0) && (static_cast<size_t>(node.mesh) < model.meshes.size()))
         {
-            DrawMesh(vaoAndEbos.second, model, model.meshes[node.mesh]);
+            cachedShader->setMat4("model_matrix", nodeMatrix);
+            DrawMesh(vbos, model, model.meshes[node.mesh]);
         }
         for (size_t i = 0; i < node.children.size(); i++)
         {
-            DrawModelNodes(vaoAndEbos, model, model.nodes[node.children[i]]);
+            auto &child = model.nodes[node.children[i]];
+            glm::mat4 childMatrix = getNodeTransformMatrix(child, nodeMatrix);
+            DrawModelNodes(vbos, model, child, childMatrix);
         }
     }
 
-    void Model::Draw(const std::pair<GLuint, std::map<int, GLuint>> &vaoAndEbos, tinygltf::Model &model)
+    void Model::Draw(const Shader &program)
     {
-        glBindVertexArray(vaoAndEbos.first);
+        cachedShader = &program;
+
+        glm::mat4 modelMatrix = glm::mat4(1.0f);
+
+        glm::translate(modelMatrix, transform.position);
+        modelMatrix = glm::rotate(modelMatrix, transform.rotation.x, glm::vec3(1.0f, 0.0f, 0.0f));
+        modelMatrix = glm::rotate(modelMatrix, transform.rotation.y, glm::vec3(0.0f, 1.0f, 0.0f));
+        modelMatrix = glm::rotate(modelMatrix, transform.rotation.z, glm::vec3(0.0f, 0.0f, 1.0f));
+        modelMatrix = glm::scale(modelMatrix, transform.scale);
 
         const tinygltf::Scene &scene = model.scenes[model.defaultScene];
-        for (size_t i = 0; i < scene.nodes.size(); ++i)
+        auto &&pair = vaoAndEbos.begin();
+        for (size_t i = 0; pair != vaoAndEbos.end() && i < scene.nodes.size(); ++i)
         {
-            DrawModelNodes(vaoAndEbos, model, model.nodes[scene.nodes[i]]);
-        }
+            auto &node = model.nodes[scene.nodes[i]];
+            glm::mat4 nodeMatrix = getNodeTransformMatrix(node, modelMatrix);
 
+            glBindVertexArray(pair->first);
+            DrawModelNodes(pair->second, model, node, nodeMatrix);
+            ++pair;
+        }
         glBindVertexArray(0);
     }
 
