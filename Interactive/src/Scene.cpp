@@ -3,13 +3,9 @@
 void Scene::setup(GLApp::Context& ctx)
 {
     cout << endl << "Loading content..." << endl;
-    this->model.LoadGLTF("./assets/table.gltf");
-    // this->model1.LoadGLTF("./assets/dog.gltf");
+    this->model.loadGLTF("./assets/maxwell.gltf");
 
-    this->model.transform.scale = {1.2, 1.2, 1.2};
-
-    // this->pipeline.CreatePipeline();
-    // this->pipeline.LoadShaders("shaders/vs_model.glsl", "shaders/fs_model.glsl");
+    this->model.transform.scale = {.1, .1, .1};
 
     this->shader.init("shaders/vs_model.glsl", "shaders/fs_model.glsl");
 
@@ -28,8 +24,8 @@ void Scene::update(GLApp::Context& ctx)
     if (ctx.keyStatus[GLFW_KEY_RIGHT]) this->model.transform.rotation.y -= 0.05f;
     if (ctx.keyStatus[GLFW_KEY_UP]) this->model.transform.rotation.x += 0.05f;
     if (ctx.keyStatus[GLFW_KEY_DOWN]) this->model.transform.rotation.x -= 0.05f;
-    // if (ctx.keyStatus[GLFW_KEY_W]) this->modelPosition.z += 0.10f;
-    // if (ctx.keyStatus[GLFW_KEY_S]) this->modelPosition.z -= 0.10f;
+
+    this->model.transform.rotation.y += .03f;
 
     if (ctx.keyStatus[GLFW_KEY_W]) this->camera.ProcessKeyboard(GLApp::FORWARD, ctx.deltaTime);
     if (ctx.keyStatus[GLFW_KEY_S]) this->camera.ProcessKeyboard(GLApp::BACKWARD, ctx.deltaTime);
@@ -67,11 +63,13 @@ void Scene::render(GLApp::Context& ctx)
     // Use our shader programs
     this->shader.use();
 
+    this->shader.setVec3("view_pos", camera.Position);
+    // this->shader.setVec3("light_pos", camera.Position);
+
     this->shader.setMat4("view_matrix", viewMatrix);
     this->shader.setMat4("proj_matrix", ctx.projMatrix);
 
-    this->model.Draw(this->shader);
-    // this->model1.Draw();
+    this->model.draw(this->shader);
 
     #if defined(__APPLE__)
         glCheckError();

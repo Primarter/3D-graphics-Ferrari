@@ -18,30 +18,48 @@
 
 namespace GLApp
 {
+    typedef GLuint MaterialId;
+
+    struct Mesh
+    {
+        GLuint vao;
+        std::map<int, GLuint> vbos;
+        MaterialId material;
+    };
+
+    struct Texture
+    {
+        GLuint id;
+        std::string name;
+        std::string type;
+        std::string path;
+    };
 
     class Model {
         public:
             Model() = default;
             ~Model() = default;
 
-            std::map<GLuint, std::map<int, GLuint>> vaoAndEbos;
+            std::map<int, Mesh> meshes;
             tinygltf::Model model;
             Transform transform;
+            std::vector<Texture> textures;
 
-            void LoadGLTF(std::string filename);
-            void Draw(const Shader &);
+            void loadGLTF(std::string filename);
+            void draw(const Shader &);
 
         private:
             // Loading
-            void BindModel(tinygltf::Model &model);
-            void BindModelNodes(std::map<int, GLuint> &vbos, tinygltf::Model &model, tinygltf::Node &node);
-            void BindMesh(std::map<int, GLuint> &vbos, tinygltf::Model &model, tinygltf::Mesh &mesh);
+            void bindModel(tinygltf::Model &model);
+            void bindModelNodes(tinygltf::Model &model, tinygltf::Node &node);
+            Mesh bindMesh(tinygltf::Model &model, tinygltf::Mesh &mesh);
+            void loadTextures(tinygltf::Model &model);
 
             // Drawing
-            void DrawModelNodes(const std::map<int, GLuint> &vbos, tinygltf::Model &model, tinygltf::Node &node, glm::mat4 &parent);
-            void DrawMesh(const std::map<int, GLuint> &vbos, tinygltf::Model &model, tinygltf::Mesh &mesh);
+            void drawModelNodes(tinygltf::Model &model, tinygltf::Node &node, glm::mat4 &parent);
+            void drawMesh(Mesh mesh, tinygltf::Model &model, tinygltf::Mesh &tinymesh);
 
             const Shader *cachedShader = nullptr;
     };
 
-};
+}
