@@ -25,15 +25,16 @@ class Scene : public GLApp::IScene {
 
         int sceneId = 0;
         bool running = true;
-        GLApp::Camera camera = GLApp::Camera(vec3(0.0f, 0.0f, 5.0f), vec3(0.0f, 1.0f, 0.0f));
+        GLApp::Camera camera = GLApp::Camera(vec3(0.0f, 1.0f, 5.0f), vec3(0.0f, 1.0f, 0.0f));
 
         float currentTime = 0.0f;
         float deltaTime = 0.0f;
         float lastTime = 0.0f;
         bool cursor = false;
 
-        glm::vec3 light_pos = vec3(1, 2.0, 0);
-        GLApp::Shader shader;
+        glm::vec3 light_pos = vec3(1, 1.0, 0);
+        GLApp::Shader PBRShader;
+        GLApp::Shader unlitShader;
         GLApp::Model model;
         GLApp::Model maxwell;
         GLApp::Debugger debugger;

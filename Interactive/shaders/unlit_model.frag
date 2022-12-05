@@ -7,13 +7,11 @@ in VS_OUT {
     vec2 tex_coords;
 } fs_in;
 
-uniform sampler2D texture_diffuse;
-uniform sampler2D texture_normals;
-uniform sampler2D texture_metallic_roughness;
+uniform sampler2D texture_albedo;
 
 void main()
 {
-    vec4 color = texture(texture_diffuse, fs_in.tex_coords).rgba;
+    vec4 color = texture(texture_albedo, fs_in.tex_coords).rgba;
 
     FragColor = color;
 }

@@ -2,7 +2,7 @@
 
 layout (location = 0) in vec3 in_vertex;
 layout (location = 1) in vec3 in_normals;
-layout (location = 3) in vec2 in_uv;
+layout (location = 2) in vec2 in_uv;
 
 out VS_OUT {
     vec3 frag_pos;

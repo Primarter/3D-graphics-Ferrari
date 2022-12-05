@@ -10,7 +10,7 @@ in VS_OUT {
     vec3 tangent_frag_pos;
 } fs_in;
 
-uniform sampler2D texture_diffuse;
+uniform sampler2D texture_albedo;
 uniform sampler2D texture_normals;
 uniform sampler2D texture_metallic_roughness;
 
@@ -26,7 +26,7 @@ void main()
     normal = normalize(normal * 2.0 - 1.0);  // this normal is in tangent space
    
     // get diffuse color
-    vec4 color = texture(texture_diffuse, fs_in.tex_coords).rgba;
+    vec4 color = texture(texture_albedo, fs_in.tex_coords).rgba;
     // ambient
     vec3 ambient = 0.1 * color.rgb;
     // diffuse
@@ -49,7 +49,7 @@ void main()
 //   vec3 ambient = ambient_strength * sun_color;
 //   float theta = max(dot(sun, fs_in.normals), 0);
 
-//   vec4 tex_color = texture(texture_diffuse, fs_in.uv).rgba;
+//   vec4 tex_color = texture(texture_albedo, fs_in.uv).rgba;
 
 //   vec3 color = tex_color.rgb * theta;
 //   // vec3 color = ambient + tex_color.rgb * theta;

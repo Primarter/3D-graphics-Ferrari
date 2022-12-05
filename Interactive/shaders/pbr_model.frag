@@ -15,7 +15,7 @@ in VS_OUT {
 // uniform sampler2D roughnessMap;
 // uniform sampler2D aoMap;
 
-uniform sampler2D texture_diffuse;
+uniform sampler2D texture_albedo;
 uniform sampler2D texture_normals;
 uniform sampler2D texture_metallic_roughness;
 
@@ -93,7 +93,7 @@ vec3 fresnel_schlick(float cosTheta, vec3 F0)
 // ----------------------------------------------------------------------------
 void main()
 {
-    vec4 base_color = texture(texture_diffuse, fs_in.tex_coords).rgba;
+    vec4 base_color = texture(texture_albedo, fs_in.tex_coords).rgba;
     vec3 albedo     = pow(base_color.rgb, vec3(2.2));
     vec2 metallic_roughness = texture(texture_metallic_roughness, fs_in.tex_coords).gb;
     float roughness = metallic_roughness.x;//texture(roughnessMap, fs_in.tex_coords).r;

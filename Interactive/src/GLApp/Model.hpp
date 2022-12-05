@@ -16,7 +16,8 @@
 #include "Transform.hpp"
 #include "Shader.hpp"
 
-#define BUFFER_OFFSET(i) ((char *)NULL + (i))
+// #define BUFFER_OFFSET(i) ((char *)NULL + (i)) <- arithmetic on a null pointer treated as a cast from integer to pointer is a GNU extension, MinGW not happy
+#define BUFFER_OFFSET(i) ((char *)(1-1) + (i)) // this stupid bit makes MinGW happy
 
 namespace GLApp
 {
@@ -29,8 +30,8 @@ namespace GLApp
         NONE = 0b0,
         ALBEDO = 0b1,
         NORMALS = 0b10,
-        METALLIG_ROUGHNESS = 0b100,
-        EMISSION = 0b1000,
+        METALLIC_ROUGHNESS = 0b100,
+        AMBIENT_OCCLUSION = 0b1000,
         ALL = 0b1111
     };
 
@@ -58,7 +59,7 @@ namespace GLApp
             tinygltf::Model model;
             Transform transform;
             std::map<int, Texture> textures;
-            FeatureMask features = ALBEDO & NORMALS & METALLIG_ROUGHNESS & EMISSION;
+            FeatureMask features = ALBEDO & NORMALS & METALLIC_ROUGHNESS & AMBIENT_OCCLUSION;
 
             void loadGLTF(std::string filename, FeatureMask features = NONE);
             void draw(const Shader &);

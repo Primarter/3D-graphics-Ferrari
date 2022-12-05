@@ -3,13 +3,15 @@
 void Scene::setup(GLApp::Context& ctx)
 {
     cout << endl << "Loading content..." << endl;
-    this->model.loadGLTF("./assets/helmet/DamagedHelmet.gltf");
-    this->maxwell.loadGLTF("./assets/maxwell.gltf");
+    GLApp::FeatureMask mask = GLApp::NONE | GLApp::ALBEDO | GLApp::NORMALS | GLApp::METALLIC_ROUGHNESS;
+    this->model.loadGLTF("./assets/helmet/DamagedHelmet.gltf", mask);
+    mask = GLApp::NONE | GLApp::ALBEDO;
+    this->maxwell.loadGLTF("./assets/maxwell.gltf", mask);
 
     this->maxwell.transform.scale = {.05, .05, .05};
 
-    // this->shader.init("shaders/vs_model.glsl", "shaders/fs_model.glsl");
-    this->shader.init("shaders/pbr_model.vert", "shaders/pbr_model.frag");
+    this->unlitShader.init("shaders/unlit_model.vert", "shaders/unlit_model.frag");
+    this->PBRShader.init("shaders/pbr_model.vert", "shaders/pbr_model.frag");
 
     // Get the correct size in pixels - E.g. if retina display or monitor scaling
     glfwGetFramebufferSize(ctx.window, &ctx.windowWidth, &ctx.windowHeight);
@@ -27,7 +29,7 @@ void Scene::update(GLApp::Context& ctx)
     if (ctx.keyStatus[GLFW_KEY_UP]) this->model.transform.rotation.x += 0.05f;
     if (ctx.keyStatus[GLFW_KEY_DOWN]) this->model.transform.rotation.x -= 0.05f;
 
-    // this->model.transform.rotation.y += .03f;
+    this->model.transform.rotation.y -= .005f;
 
     if (ctx.keyStatus[GLFW_KEY_W]) this->camera.ProcessKeyboard(GLApp::FORWARD, ctx.deltaTime);
     if (ctx.keyStatus[GLFW_KEY_S]) this->camera.ProcessKeyboard(GLApp::BACKWARD, ctx.deltaTime);
@@ -36,7 +38,7 @@ void Scene::update(GLApp::Context& ctx)
     if (ctx.keyStatus[GLFW_KEY_Q]) this->camera.ProcessKeyboard(GLApp::DOWN, ctx.deltaTime);
     if (ctx.keyStatus[GLFW_KEY_E]) this->camera.ProcessKeyboard(GLApp::UP, ctx.deltaTime);
 
-    if (ctx.keyStatus[GLFW_KEY_R]) this->shader.reloadShaders();
+    if (ctx.keyStatus[GLFW_KEY_R]) this->PBRShader.reloadShaders();
 }
 
 void Scene::render(GLApp::Context& ctx)
@@ -49,39 +51,41 @@ void Scene::render(GLApp::Context& ctx)
     glm::vec4 backgroundColor = inchyraBlue;
     glClearBufferfv(GL_COLOR, 0, &backgroundColor[0]);
 
-    // Clear deep buffer
+    // Clear depth buffer
     static const GLfloat one = 1.0f;
     glClearBufferfv(GL_DEPTH, 0, &one);
 
-    // Enable blend
-    glEnable(GL_BLEND);
+    // Specify blend function
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
     // Setup camera
     glm::mat4 viewMatrix = camera.GetViewMatrix();
 
-    // Do some translations, rotations and scaling
-
     // Use our shader programs
-    this->shader.use();
+    this->PBRShader.use();
 
-    this->shader.setVec3("view_pos", camera.Position);
     float t = glfwGetTime();
     light_pos = vec3(cos(t), light_pos.y, sin(t));
 
-    // std::cout << t << std::endl;
+    this->maxwell.transform.rotation.y = t * 2.0;
     this->maxwell.transform.position = light_pos;
 
-    this->shader.setVec3("light_pos[0]", light_pos);
-    this->shader.setVec3("light_colors[0]", vec3(1.0, 1.0, 1.0));
+    this->PBRShader.setVec3("light_pos[0]", light_pos);
+    this->PBRShader.setVec3("light_colors[0]", vec3(1.0, 1.0, 1.0));
 
-    this->shader.setVec3("camera_pos", camera.Position);
+    this->PBRShader.setVec3("camera_pos", camera.Position);
 
-    this->shader.setMat4("view_matrix", viewMatrix);
-    this->shader.setMat4("proj_matrix", ctx.projMatrix);
+    this->PBRShader.setMat4("view_matrix", viewMatrix);
+    this->PBRShader.setMat4("proj_matrix", ctx.projMatrix);
 
-    this->model.draw(this->shader);
-    this->maxwell.draw(this->shader);
+    this->model.draw(this->PBRShader);
+
+    this->unlitShader.use();
+
+    this->unlitShader.setMat4("view_matrix", viewMatrix);
+    this->unlitShader.setMat4("proj_matrix", ctx.projMatrix);
+
+    this->maxwell.draw(this->unlitShader);
 
     #if defined(__APPLE__)
         glCheckError();
@@ -117,9 +121,9 @@ void Scene::ui(UNUSED GLApp::Context& ctx)
 
     ImGui::SetNextWindowBgAlpha(0.35f); // Transparent background
     if (ImGui::Begin("Info", nullptr, window_flags)) {
-        ImGui::Text("About: 3D Graphics and Animation 2022"); ImGui::Separator();
+        ImGui::Text("3D Graphics and Animation 2022, Camille Ferrari"); ImGui::Separator();
         ImGui::Text("Performance: %.3fms/Frame (%.1f FPS)", 1000.0f / io.Framerate, io.Framerate);
-        ImGui::Text("Pipeline: %s", this->shader.error ? "ERROR" : "OK");
+        ImGui::Text("Pipeline: %s", this->PBRShader.error ? "ERROR" : "OK");
     }
 
     ImGui::InputFloat3("Maxwell position", glm::value_ptr(light_pos));

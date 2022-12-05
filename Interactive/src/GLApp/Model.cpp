@@ -142,27 +142,32 @@ namespace GLApp {
                 else{ // ???
                 }
 
-                const std::vector<std::string> diffuseKeywords = {"diffuse", "basecolor", "color", "colors", "albedo"};
+                const std::vector<std::string> albedoKeywords = {"diffuse", "basecolor", "color", "colors", "albedo"};
                 const std::vector<std::string> normalsKeywords = {"normal", "normals", "bump"};
                 const std::vector<std::string> metallicRoughnessKeywords = {"roughness", "metallic", "metal", "rough"};
+                const std::vector<std::string> ambientOcclusionKeywords = {"occlusion", "ao"};
 
-                std::string textureType = "texture_diffuse";
+                std::string textureType = "texture_albedo";
 
-                if (stringContainsAny(image.uri, diffuseKeywords))
+                if (stringContainsAny(image.uri, albedoKeywords) && (features & ALBEDO))
                 {
-                    textureType = "texture_diffuse";
+                    textureType = "texture_albedo";
                 }
-                else if (stringContainsAny(image.uri, normalsKeywords))
+                else if (stringContainsAny(image.uri, normalsKeywords) && (features & NORMALS))
                 {
                     textureType = "texture_normals";
                 }
-                else if (stringContainsAny(image.uri, metallicRoughnessKeywords))
+                else if (stringContainsAny(image.uri, metallicRoughnessKeywords) && (features & METALLIC_ROUGHNESS))
                 {
                     textureType = "texture_metallic_roughness";
                 }
+                else if (stringContainsAny(image.uri, ambientOcclusionKeywords) && (features & AMBIENT_OCCLUSION))
+                {
+                    textureType = "texture_ambient_occlusion";
+                }
                 else
                 {
-                    std::cout << image.uri << " texture: Texture name doesn't contain keyword, ignoring" << std::endl;
+                    std::cout << image.uri << " texture: Texture name not recognised or texture type disabled, ignoring" << std::endl;
                     continue;
                 }
 
@@ -231,7 +236,7 @@ namespace GLApp {
             glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mesh.vbos.at(indexAccessor.bufferView));
 
             Texture texture;
-            if (material.pbrMetallicRoughness.baseColorTexture.index > -1)
+            if (material.pbrMetallicRoughness.baseColorTexture.index > -1 && (features & ALBEDO))
             {
                 texture = textures[material.pbrMetallicRoughness.baseColorTexture.index];
                 glActiveTexture(GL_TEXTURE0);
@@ -239,7 +244,7 @@ namespace GLApp {
                 glBindTexture(GL_TEXTURE_2D, textures[material.pbrMetallicRoughness.baseColorTexture.index].id);
             }
 
-            if (material.normalTexture.index > -1)
+            if (material.normalTexture.index > -1 && (features & NORMALS))
             {
                 texture = textures[material.normalTexture.index];
                 glActiveTexture(GL_TEXTURE0 + 1);
@@ -247,7 +252,7 @@ namespace GLApp {
                 glBindTexture(GL_TEXTURE_2D, textures[material.normalTexture.index].id);
             }
 
-            if (material.pbrMetallicRoughness.metallicRoughnessTexture.index > -1)
+            if (material.pbrMetallicRoughness.metallicRoughnessTexture.index > -1 && (features & METALLIC_ROUGHNESS))
             {
                 texture = textures[material.pbrMetallicRoughness.metallicRoughnessTexture.index];
                 glActiveTexture(GL_TEXTURE0 + 2);
