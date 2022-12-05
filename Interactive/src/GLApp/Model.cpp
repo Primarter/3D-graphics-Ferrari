@@ -2,7 +2,7 @@
 
 namespace GLApp {
 
-    void Model::loadGLTF(std::string filename)
+    void Model::loadGLTF(std::string filename, FeatureMask userFeatures)
     {
 
         std::cout << "Trying to load model " << filename << "\n";
@@ -20,9 +20,10 @@ namespace GLApp {
         else
             std::cout << "OK - Loaded glTF: " << filename << std::endl;
 
+        features = userFeatures;
+
         bindModel(model);
     }
-
 
     GLApp::Mesh Model::bindMesh(tinygltf::Model &model, tinygltf::Mesh &mesh)
     {
@@ -42,16 +43,11 @@ namespace GLApp {
             }
 
             const tinygltf::Buffer &buffer = model.buffers[bufferView.buffer];
-            // std::cout << "bufferview.target " << bufferView.target << std::endl;
 
             GLuint vbo;
             glGenBuffers(1, &vbo);
             vbos[i] = vbo;
             glBindBuffer(bufferView.target, vbo);
-
-            // std::cout << "buffer.data.size = " << buffer.data.size()
-            //         << ", bufferview.byteOffset = " << bufferView.byteOffset
-            //         << std::endl;
 
             glBufferData(bufferView.target, bufferView.byteLength,
                         &buffer.data.at(0) + bufferView.byteOffset, GL_STATIC_DRAW);
@@ -79,10 +75,8 @@ namespace GLApp {
                     vaa = 0;
                 if (attrib.first.compare("NORMAL") == 0)
                     vaa = 1;
-                if (attrib.first.compare("TANGENT") == 0)
-                    vaa = 2;
                 if (attrib.first.compare("TEXCOORD_0") == 0)
-                    vaa = 3;
+                    vaa = 2;
                 if (vaa > -1)
                 {
                     glEnableVertexAttribArray(vaa);
@@ -148,7 +142,7 @@ namespace GLApp {
                 else{ // ???
                 }
 
-                const std::vector<std::string> diffuseKeywords = {"diffuse", "basecolor", "color", "colors"};
+                const std::vector<std::string> diffuseKeywords = {"diffuse", "basecolor", "color", "colors", "albedo"};
                 const std::vector<std::string> normalsKeywords = {"normal", "normals", "bump"};
                 const std::vector<std::string> metallicRoughnessKeywords = {"roughness", "metallic", "metal", "rough"};
 
@@ -168,13 +162,14 @@ namespace GLApp {
                 }
                 else
                 {
-                    std::cout << image.uri << " texture: Texture name doesn't contain keyword, defaulting to diffuse" << std::endl;
+                    std::cout << image.uri << " texture: Texture name doesn't contain keyword, ignoring" << std::endl;
+                    continue;
                 }
 
                 glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, image.width, image.height, 0,
                             format, type, &image.image.at(0));
                 std::cout << image.uri << " is used as " << textureType << std::endl;
-                textures.push_back(Texture{texid, model.textures[i].name, textureType, image.uri});
+                textures[i] = Texture{texid, model.textures[i].name, textureType, image.uri};
             }
         }
     }
@@ -235,20 +230,30 @@ namespace GLApp {
 
             glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mesh.vbos.at(indexAccessor.bufferView));
 
-            Texture texture = textures[material.pbrMetallicRoughness.baseColorTexture.index];
-            glActiveTexture(GL_TEXTURE0);
-            glUniform1i(glGetUniformLocation(cachedShader->ID, texture.type.c_str()), 0);
-            glBindTexture(GL_TEXTURE_2D, textures[material.pbrMetallicRoughness.baseColorTexture.index].id);
+            Texture texture;
+            if (material.pbrMetallicRoughness.baseColorTexture.index > -1)
+            {
+                texture = textures[material.pbrMetallicRoughness.baseColorTexture.index];
+                glActiveTexture(GL_TEXTURE0);
+                glUniform1i(glGetUniformLocation(cachedShader->ID, texture.type.c_str()), 0);
+                glBindTexture(GL_TEXTURE_2D, textures[material.pbrMetallicRoughness.baseColorTexture.index].id);
+            }
 
-            texture = textures[material.normalTexture.index];
-            glActiveTexture(GL_TEXTURE0 + 1);
-            glUniform1i(glGetUniformLocation(cachedShader->ID, texture.type.c_str()), 1);
-            glBindTexture(GL_TEXTURE_2D, textures[material.normalTexture.index].id);
+            if (material.normalTexture.index > -1)
+            {
+                texture = textures[material.normalTexture.index];
+                glActiveTexture(GL_TEXTURE0 + 1);
+                glUniform1i(glGetUniformLocation(cachedShader->ID, texture.type.c_str()), 1);
+                glBindTexture(GL_TEXTURE_2D, textures[material.normalTexture.index].id);
+            }
 
-            texture = textures[material.pbrMetallicRoughness.metallicRoughnessTexture.index];
-            glActiveTexture(GL_TEXTURE0 + 2);
-            glUniform1i(glGetUniformLocation(cachedShader->ID, texture.type.c_str()), 2);
-            glBindTexture(GL_TEXTURE_2D, textures[material.pbrMetallicRoughness.metallicRoughnessTexture.index].id);
+            if (material.pbrMetallicRoughness.metallicRoughnessTexture.index > -1)
+            {
+                texture = textures[material.pbrMetallicRoughness.metallicRoughnessTexture.index];
+                glActiveTexture(GL_TEXTURE0 + 2);
+                glUniform1i(glGetUniformLocation(cachedShader->ID, texture.type.c_str()), 2);
+                glBindTexture(GL_TEXTURE_2D, textures[material.pbrMetallicRoughness.metallicRoughnessTexture.index].id);
+            }
 
             if (material.alphaMode == "BLEND") glEnable(GL_BLEND);
             else glDisable(GL_BLEND);
@@ -301,7 +306,7 @@ namespace GLApp {
 
         glm::mat4 modelMatrix = glm::mat4(1.0f);
 
-        glm::translate(modelMatrix, transform.position);
+        modelMatrix = glm::translate(modelMatrix, transform.position);
         modelMatrix = glm::rotate(modelMatrix, transform.rotation.x, glm::vec3(1.0f, 0.0f, 0.0f));
         modelMatrix = glm::rotate(modelMatrix, transform.rotation.y, glm::vec3(0.0f, 1.0f, 0.0f));
         modelMatrix = glm::rotate(modelMatrix, transform.rotation.z, glm::vec3(0.0f, 0.0f, 1.0f));

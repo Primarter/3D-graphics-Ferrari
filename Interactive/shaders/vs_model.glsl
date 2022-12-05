@@ -37,6 +37,7 @@ void main(void)
     vs_out.tangent_frag_pos  = TBN * pos.xyz;
 
     vs_out.tex_coords = in_uv;
+    vs_out.frag_pos = pos.xyz;
 
     gl_Position = proj_matrix * view_matrix * pos;
 }

@@ -3,11 +3,13 @@
 void Scene::setup(GLApp::Context& ctx)
 {
     cout << endl << "Loading content..." << endl;
-    this->model.loadGLTF("./assets/maxwell.gltf");
+    this->model.loadGLTF("./assets/helmet/DamagedHelmet.gltf");
+    this->maxwell.loadGLTF("./assets/maxwell.gltf");
 
-    this->model.transform.scale = {.1, .1, .1};
+    this->maxwell.transform.scale = {.05, .05, .05};
 
-    this->shader.init("shaders/vs_model.glsl", "shaders/fs_model.glsl");
+    // this->shader.init("shaders/vs_model.glsl", "shaders/fs_model.glsl");
+    this->shader.init("shaders/pbr_model.vert", "shaders/pbr_model.frag");
 
     // Get the correct size in pixels - E.g. if retina display or monitor scaling
     glfwGetFramebufferSize(ctx.window, &ctx.windowWidth, &ctx.windowHeight);
@@ -25,7 +27,7 @@ void Scene::update(GLApp::Context& ctx)
     if (ctx.keyStatus[GLFW_KEY_UP]) this->model.transform.rotation.x += 0.05f;
     if (ctx.keyStatus[GLFW_KEY_DOWN]) this->model.transform.rotation.x -= 0.05f;
 
-    this->model.transform.rotation.y += .03f;
+    // this->model.transform.rotation.y += .03f;
 
     if (ctx.keyStatus[GLFW_KEY_W]) this->camera.ProcessKeyboard(GLApp::FORWARD, ctx.deltaTime);
     if (ctx.keyStatus[GLFW_KEY_S]) this->camera.ProcessKeyboard(GLApp::BACKWARD, ctx.deltaTime);
@@ -64,12 +66,22 @@ void Scene::render(GLApp::Context& ctx)
     this->shader.use();
 
     this->shader.setVec3("view_pos", camera.Position);
-    // this->shader.setVec3("light_pos", camera.Position);
+    float t = glfwGetTime();
+    light_pos = vec3(cos(t), light_pos.y, sin(t));
+
+    // std::cout << t << std::endl;
+    this->maxwell.transform.position = light_pos;
+
+    this->shader.setVec3("light_pos[0]", light_pos);
+    this->shader.setVec3("light_colors[0]", vec3(1.0, 1.0, 1.0));
+
+    this->shader.setVec3("camera_pos", camera.Position);
 
     this->shader.setMat4("view_matrix", viewMatrix);
     this->shader.setMat4("proj_matrix", ctx.projMatrix);
 
     this->model.draw(this->shader);
+    this->maxwell.draw(this->shader);
 
     #if defined(__APPLE__)
         glCheckError();
@@ -109,6 +121,8 @@ void Scene::ui(UNUSED GLApp::Context& ctx)
         ImGui::Text("Performance: %.3fms/Frame (%.1f FPS)", 1000.0f / io.Framerate, io.Framerate);
         ImGui::Text("Pipeline: %s", this->shader.error ? "ERROR" : "OK");
     }
+
+    ImGui::InputFloat3("Maxwell position", glm::value_ptr(light_pos));
     ImGui::End();
 
     // Rendering imgui
@@ -117,12 +131,21 @@ void Scene::ui(UNUSED GLApp::Context& ctx)
 }
 
 void Scene::onResizeCallback(UNUSED GLFWwindow* window, UNUSED int w, UNUSED int h){}
-void Scene::onKeyCallback(UNUSED GLFWwindow* window, UNUSED int key, UNUSED int scancode, UNUSED int action, UNUSED int mods){}
+void Scene::onKeyCallback(GLFWwindow* window, int key, UNUSED int scancode, int action, UNUSED int mods)
+{
+    GLApp::Context* ctx = static_cast<GLApp::Context*>(glfwGetWindowUserPointer(window));
+    if (key == GLFW_KEY_C && action == GLFW_PRESS)
+    {
+        cursor = !cursor;
+        glfwSetInputMode(ctx->window, GLFW_CURSOR, cursor ? GLFW_CURSOR_NORMAL : GLFW_CURSOR_DISABLED);
+    }
+}
 void Scene::onMouseButtonCallback(UNUSED GLFWwindow* window, UNUSED int button, UNUSED int action, UNUSED int mods){}
 void Scene::onMouseMoveCallback(UNUSED GLFWwindow* window, double x, double y)
 {
     static double previousX = x, previousY = y;
-    this->camera.ProcessMouseMovement(x - previousX, previousY - y);
+    if (!cursor)
+        this->camera.ProcessMouseMovement(x - previousX, previousY - y);
     previousX = x;
     previousY = y;
 }

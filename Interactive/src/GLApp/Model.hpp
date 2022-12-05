@@ -9,7 +9,9 @@
 #include <tinygltf/tiny_gltf.h>
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtx/matrix_decompose.hpp>
 #include <glm/gtx/string_cast.hpp>
+#include <glm/gtc/type_ptr.hpp>
 
 #include "Transform.hpp"
 #include "Shader.hpp"
@@ -19,6 +21,18 @@
 namespace GLApp
 {
     typedef GLuint MaterialId;
+
+    typedef uint8_t FeatureMask;
+
+    enum ModelFeatures
+    {
+        NONE = 0b0,
+        ALBEDO = 0b1,
+        NORMALS = 0b10,
+        METALLIG_ROUGHNESS = 0b100,
+        EMISSION = 0b1000,
+        ALL = 0b1111
+    };
 
     struct Mesh
     {
@@ -43,9 +57,10 @@ namespace GLApp
             std::map<int, Mesh> meshes;
             tinygltf::Model model;
             Transform transform;
-            std::vector<Texture> textures;
+            std::map<int, Texture> textures;
+            FeatureMask features = ALBEDO & NORMALS & METALLIG_ROUGHNESS & EMISSION;
 
-            void loadGLTF(std::string filename);
+            void loadGLTF(std::string filename, FeatureMask features = NONE);
             void draw(const Shader &);
 
         private:

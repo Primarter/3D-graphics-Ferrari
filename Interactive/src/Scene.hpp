@@ -30,9 +30,12 @@ class Scene : public GLApp::IScene {
         float currentTime = 0.0f;
         float deltaTime = 0.0f;
         float lastTime = 0.0f;
+        bool cursor = false;
 
+        glm::vec3 light_pos = vec3(1, 2.0, 0);
         GLApp::Shader shader;
         GLApp::Model model;
+        GLApp::Model maxwell;
         GLApp::Debugger debugger;
 
         vec3 modelPosition;
