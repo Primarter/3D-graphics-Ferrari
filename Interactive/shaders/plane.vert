@@ -7,10 +7,7 @@ layout (location = 2) in vec2 in_uv;
 out VS_OUT {
     vec3 frag_pos;
     vec2 tex_coords;
-    vec3 noise;
-    vec3 layer1;
-    vec3 layer2;
-    vec3 normal;
+    float bump;
 } vs_out;
 
 uniform mat4 model_matrix;
@@ -18,8 +15,9 @@ uniform mat4 view_matrix;
 uniform mat4 proj_matrix;
 uniform float bump_strength;
 uniform float time;
+uniform float plane_scale;
 
-const float epsilon = 0.001;
+// const float epsilon = 0.001;
 
 //  Classic Perlin 2D Noise
 //  by Stefan Gustavson
@@ -65,32 +63,33 @@ void main(void)
     vec4 pos = model_matrix * vec4(in_vertex, 1.0);
 
     //normals
-    vec2 p1 = in_uv * 10.0;
-    vec2 p2 = in_uv * 10.0 + vec2(epsilon, 0);
-    vec2 p3 = in_uv * 10.0 + vec2(0, epsilon);
+    vec2 p1 = in_uv * (10.0 + plane_scale);
+    // vec2 p2 = in_uv * (10.0 + plane_scale) + vec2(epsilon, 0);
+    // vec2 p3 = in_uv * (10.0 + plane_scale) + vec2(0, epsilon);
 
     float noise_value1 = cnoise(p1 + vec2(sin(time) * .2, cos(time) * .6) / 2.0);
-    float noise_value2 = cnoise(p2);
-    float noise_value3 = cnoise(p3);
+    // float noise_value2 = cnoise(p2);
+    // float noise_value3 = cnoise(p3);
 
-    vec3 pp1 = (vec3(p1.x, noise_value1, p1.y));
-    vec3 pp2 = (vec3(p2.x, noise_value2, p2.y));
-    vec3 pp3 = (vec3(p3.x, noise_value3, p3.y));
+    // vec3 pp1 = (vec3(p1.x, noise_value1, p1.y));
+    // vec3 pp2 = (vec3(p2.x, noise_value2, p2.y));
+    // vec3 pp3 = (vec3(p3.x, noise_value3, p3.y));
 
-    vs_out.normal = normalize(cross(pp2 - pp1, pp3 - pp1));
+    // vs_out.normal = normalize(cross(pp2 - pp1, pp3 - pp1));
 
     // bump
-    pos.y += noise_value1 * bump_strength;
+    float bump = noise_value1 * bump_strength;
+    vs_out.bump = bump;
+    pos.y += bump;
 
     // noise layers
-    vec2 layer1_offset = vec2(sin(time) * .15, cos(time) * .6) / 3.0;
-    vs_out.layer1 = vec3(cnoise(in_uv * 10.0 - layer1_offset));
-    vec2 layer2_offset = vec2(sin(time) * .4, cos(time) * .8) + 10.0;
-    vs_out.layer2 = vec3(cnoise(in_uv * 10.0 + layer2_offset));
+    // vec2 layer1_offset = vec2(sin(time) * .15, cos(time) * .6) / 3.0;
+    // vs_out.layer1 = vec3(cnoise(in_uv * (10.0 + plane_scale) - layer1_offset));
+    // vec2 layer2_offset = vec2(sin(time) * .4, cos(time) * .8) + (10.0 + plane_scale);
+    // vs_out.layer2 = vec3(cnoise(in_uv * (10.0 + plane_scale) + layer2_offset));
 
     vs_out.tex_coords = in_uv;
     vs_out.frag_pos = pos.xyz;
-    vs_out.noise = vec3(noise_value1);
 
     gl_Position = proj_matrix * view_matrix * pos;
 }

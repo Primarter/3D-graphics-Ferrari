@@ -35,6 +35,7 @@ class Scene : public GLApp::IScene {
         bool planeWireframe = false;
         float stepValue = .5;
         float bumpStrength = .3;
+        float shaderScale = 5;
 
         glm::vec3 light_pos = vec3(1, 1.0, 0);
 

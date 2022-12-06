@@ -152,19 +152,19 @@ namespace GLApp {
 
                 std::string textureType = "texture_albedo";
 
-                if (stringContainsAny(image.uri, albedoKeywords) && (features & ALBEDO))
+                if ((features & ALBEDO) && stringContainsAny(image.uri, albedoKeywords))
                 {
                     textureType = "texture_albedo";
                 }
-                else if (stringContainsAny(image.uri, normalsKeywords) && (features & NORMALS))
+                else if ((features & NORMALS) && stringContainsAny(image.uri, normalsKeywords))
                 {
                     textureType = "texture_normals";
                 }
-                else if (stringContainsAny(image.uri, metallicRoughnessKeywords) && (features & METALLIC_ROUGHNESS))
+                else if ((features & METALLIC_ROUGHNESS) && stringContainsAny(image.uri, metallicRoughnessKeywords))
                 {
                     textureType = "texture_metallic_roughness";
                 }
-                else if (stringContainsAny(image.uri, ambientOcclusionKeywords) && (features & AMBIENT_OCCLUSION))
+                else if ((features & AMBIENT_OCCLUSION) && stringContainsAny(image.uri, ambientOcclusionKeywords))
                 {
                     textureType = "texture_ambient_occlusion";
                 }
@@ -253,24 +253,40 @@ namespace GLApp {
                 texture = textures[material.pbrMetallicRoughness.baseColorTexture.index];
                 glActiveTexture(GL_TEXTURE0);
                 glUniform1i(glGetUniformLocation(cachedShader->ID, texture.type.c_str()), 0);
-                glBindTexture(GL_TEXTURE_2D, textures[material.pbrMetallicRoughness.baseColorTexture.index].id);
+                glBindTexture(GL_TEXTURE_2D, texture.id);
+                cachedShader->setBool("has_albedo", true);
             }
+            else cachedShader->setBool("has_albedo", false);
 
             if (material.normalTexture.index > -1 && (features & NORMALS))
             {
                 texture = textures[material.normalTexture.index];
                 glActiveTexture(GL_TEXTURE0 + 1);
                 glUniform1i(glGetUniformLocation(cachedShader->ID, texture.type.c_str()), 1);
-                glBindTexture(GL_TEXTURE_2D, textures[material.normalTexture.index].id);
+                glBindTexture(GL_TEXTURE_2D, texture.id);
+                cachedShader->setBool("has_normals", true);
             }
+            else cachedShader->setBool("has_normals", false);
 
             if (material.pbrMetallicRoughness.metallicRoughnessTexture.index > -1 && (features & METALLIC_ROUGHNESS))
             {
                 texture = textures[material.pbrMetallicRoughness.metallicRoughnessTexture.index];
                 glActiveTexture(GL_TEXTURE0 + 2);
                 glUniform1i(glGetUniformLocation(cachedShader->ID, texture.type.c_str()), 2);
-                glBindTexture(GL_TEXTURE_2D, textures[material.pbrMetallicRoughness.metallicRoughnessTexture.index].id);
+                glBindTexture(GL_TEXTURE_2D, texture.id);
+                cachedShader->setBool("has_metallic_roughness", true);
             }
+            else cachedShader->setBool("has_metallic_roughness", false);
+
+            if (material.occlusionTexture.index > -1 && (features & METALLIC_ROUGHNESS))
+            {
+                texture = textures[material.occlusionTexture.index];
+                glActiveTexture(GL_TEXTURE0 + 3);
+                glUniform1i(glGetUniformLocation(cachedShader->ID, texture.type.c_str()), 3);
+                glBindTexture(GL_TEXTURE_2D, texture.id);
+                cachedShader->setBool("has_metallic_roughness", true);
+            }
+            else cachedShader->setBool("has_metallic_roughness", false);
 
             if (material.alphaMode == "BLEND") glEnable(GL_BLEND);
             else glDisable(GL_BLEND);
@@ -339,4 +355,14 @@ namespace GLApp {
         }
     }
 
+    void Model::ImGuiTransform(std::string name)
+    {
+        if (ImGui::TreeNode(name.c_str()))
+        {
+            ImGui::DragFloat3("Position", glm::value_ptr(transform.position), .01f, 0.0, 0.0, "%.2f");
+            ImGui::DragFloat3("Rotation", glm::value_ptr(transform.rotation), .01f, 0.0, 0.0, "%.2f");
+            ImGui::DragFloat3("Scale", glm::value_ptr(transform.scale), .01f, 0.0, 0.0, "%.2f");
+            ImGui::TreePop();
+        }
+    }
 }

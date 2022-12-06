@@ -6,6 +6,10 @@
 #include <vector>
 #include <glad/glad.h>
 
+#include <imgui/imgui.h>			  // Load GUI library - Dear ImGui - https://github.com/ocornut/imgui
+#include <imgui/imgui_impl_glfw.h>	  // Platform ImGui using GLFW
+#include <imgui/imgui_impl_opengl3.h> // Platform new OpenGL - aka better than 3.3 core version.
+
 #include <tinygltf/tiny_gltf.h>
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
@@ -59,10 +63,11 @@ namespace GLApp
             tinygltf::Model model;
             Transform transform;
             std::map<int, Texture> textures;
-            FeatureMask features = ALBEDO & NORMALS & METALLIC_ROUGHNESS & AMBIENT_OCCLUSION;
+            FeatureMask features = NONE;
 
             void loadGLTF(std::string filename, FeatureMask features = NONE);
             void draw(const Shader &);
+            void ImGuiTransform(std::string name);
 
         private:
             // Loading

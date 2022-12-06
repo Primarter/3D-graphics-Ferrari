@@ -16,8 +16,13 @@ in VS_OUT {
 // uniform sampler2D aoMap;
 
 uniform sampler2D texture_albedo;
+uniform bool has_albedo;
 uniform sampler2D texture_normals;
+uniform bool has_normals;
 uniform sampler2D texture_metallic_roughness;
+uniform bool has_metallic_roughness;
+uniform sampler2D texture_ambient_occlusion;
+uniform bool has_ambient_occlusion;
 
 // lights
 const int NB_LIGHTS = 1;
@@ -93,12 +98,12 @@ vec3 fresnel_schlick(float cosTheta, vec3 F0)
 // ----------------------------------------------------------------------------
 void main()
 {
-    vec4 base_color = texture(texture_albedo, fs_in.tex_coords).rgba;
-    vec3 albedo     = pow(base_color.rgb, vec3(2.2));
-    vec2 metallic_roughness = texture(texture_metallic_roughness, fs_in.tex_coords).gb;
-    float roughness = metallic_roughness.x;//texture(roughnessMap, fs_in.tex_coords).r;
-    float metallic  = metallic_roughness.y;//texture(metallicMap, fs_in.tex_coords).r;
-    float ao        = 1.0;//texture(aoMap, fs_in.tex_coords).r;
+    vec4 base_color         = has_albedo ? texture(texture_albedo, fs_in.tex_coords).rgba : vec4(1.0, 0.0, 1.0, 1.0);
+    vec3 albedo             = pow(base_color.rgb, vec3(2.2));
+    vec2 metallic_roughness = has_metallic_roughness ? texture(texture_metallic_roughness, fs_in.tex_coords).gb : vec2(.5);
+    float roughness         = metallic_roughness.x;//texture(roughnessMap, fs_in.tex_coords).r;
+    float metallic          = metallic_roughness.y;//texture(metallicMap, fs_in.tex_coords).r;
+    float ao                = has_ambient_occlusion ? texture(texture_ambient_occlusion, fs_in.tex_coords).r : 1.0;
 
     vec3 N = get_normal_from_map();
     vec3 V = normalize(camera_pos - fs_in.frag_pos);

@@ -164,7 +164,7 @@
         {
             "mimeType" : "image/png",
             "name" : "Table_Wood_bake",
-            "uri" : "textures/Table_Wood_bake.png"
+            "uri" : "textures/Table_Wood_albedo.png"
         },
         {
             "mimeType" : "image/png",
@@ -174,7 +174,7 @@
         {
             "mimeType" : "image/png",
             "name" : "Feet_Wood_bake",
-            "uri" : "textures/Feet_Wood_bake.png"
+            "uri" : "textures/Feet_Wood_albedo.png"
         }
     ],
     "accessors" : [

@@ -4,8 +4,9 @@ void Scene::setup(GLApp::Context& ctx)
 {
     cout << endl << "Loading content..." << endl;
 
-    GLApp::FeatureMask mask = GLApp::NONE | GLApp::ALBEDO | GLApp::NORMALS | GLApp::METALLIC_ROUGHNESS;
-    this->model.loadGLTF("./assets/helmet/DamagedHelmet.gltf", mask);
+    GLApp::FeatureMask mask = GLApp::NONE | GLApp::ALBEDO | GLApp::NORMALS | GLApp::METALLIC_ROUGHNESS | GLApp::AMBIENT_OCCLUSION;
+    // this->model.loadGLTF("./assets/helmet/DamagedHelmet.gltf", mask);
+    this->model.loadGLTF("./assets/sofa/GlamVelvetSofa.gltf", mask);
 
     mask = GLApp::NONE | GLApp::ALBEDO;
     this->maxwell.loadGLTF("./assets/maxwell/maxwell.gltf", mask);
@@ -36,7 +37,7 @@ void Scene::update(GLApp::Context& ctx)
     if (ctx.keyStatus[GLFW_KEY_UP]) this->model.transform.rotation.x += 0.05f;
     if (ctx.keyStatus[GLFW_KEY_DOWN]) this->model.transform.rotation.x -= 0.05f;
 
-    this->model.transform.rotation.y -= .005f;
+    // this->model.transform.rotation.y -= .005f;
 
     if (ctx.keyStatus[GLFW_KEY_W]) this->camera.ProcessKeyboard(GLApp::FORWARD, ctx.deltaTime);
     if (ctx.keyStatus[GLFW_KEY_S]) this->camera.ProcessKeyboard(GLApp::BACKWARD, ctx.deltaTime);
@@ -79,8 +80,8 @@ void Scene::render(GLApp::Context& ctx)
     this->PBRShader.setMat4("proj_matrix", ctx.projMatrix);
     this->model.draw(this->PBRShader);
 
-    this->maxwell.transform.rotation.y = t * 2.0;
-    this->maxwell.transform.position = light_pos;
+    // this->maxwell.transform.rotation.y = t * 2.0;
+    // this->maxwell.transform.position = light_pos;
     this->unlitShader.use();
     this->unlitShader.setMat4("view_matrix", viewMatrix);
     this->unlitShader.setMat4("proj_matrix", ctx.projMatrix);
@@ -95,6 +96,7 @@ void Scene::render(GLApp::Context& ctx)
     this->planeShader.setFloat("step_value", stepValue);
     this->planeShader.setFloat("bump_strength", bumpStrength);
     this->planeShader.setFloat("time", t);
+    this->planeShader.setFloat("plane_scale", shaderScale);
     this->planeShader.setVec3("camera_pos", camera.Position);
     this->plane.draw(this->planeShader);
 
@@ -138,10 +140,23 @@ void Scene::ui(UNUSED GLApp::Context& ctx)
         ImGui::Text("Pipeline: %s", this->PBRShader.error ? "ERROR" : "OK");
     }
 
-    ImGui::InputFloat3("Maxwell position", glm::value_ptr(light_pos));
-    ImGui::Checkbox("Plane wireframe", &planeWireframe);
-    ImGui::SliderFloat("Step value", &stepValue, 0.0, 1.0, "%.3f");
-    ImGui::SliderFloat("Bump value", &bumpStrength, 0.0, 1.0, "%.3f");
+    if (ImGui::CollapsingHeader("Models"))
+    {
+        model.ImGuiTransform("Sofa");
+        maxwell.ImGuiTransform("Maxwell");
+        plane.ImGuiTransform("Plane");
+    }
+
+    ImGui::Separator();
+
+    if (ImGui::CollapsingHeader("Plane shader settings"))
+    {
+        ImGui::Checkbox("Plane wireframe", &planeWireframe);
+        ImGui::SliderFloat("Step value", &stepValue, 0.0, 1.0, "%.3f");
+        ImGui::SliderFloat("Bump value", &bumpStrength, 0.0, 1.0, "%.3f");
+        ImGui::InputFloat("Plane shader scale", &shaderScale, .1);
+    }
+
     ImGui::End();
 
     // Rendering imgui
