@@ -32,11 +32,20 @@ class Scene : public GLApp::IScene {
         float lastTime = 0.0f;
         bool cursor = false;
 
+        bool planeWireframe = false;
+        float stepValue = .5;
+        float bumpStrength = .3;
+
         glm::vec3 light_pos = vec3(1, 1.0, 0);
-        GLApp::Shader PBRShader;
-        GLApp::Shader unlitShader;
+
         GLApp::Model model;
         GLApp::Model maxwell;
+        GLApp::Model plane;
+
+        GLApp::Shader PBRShader;
+        GLApp::Shader unlitShader;
+        GLApp::Shader planeShader;
+
         GLApp::Debugger debugger;
 
         vec3 modelPosition;

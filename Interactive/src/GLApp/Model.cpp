@@ -16,7 +16,10 @@ namespace GLApp {
         if (!err.empty())  std::cout << "ERROR - GLTF: " << err << std::endl;
 
         if (!res)
+        {
             std::cout << "ERROR - Failed to load glTF: " << filename << std::endl;
+            throw new std::runtime_error("Model::loadGLTF failed");
+        }
         else
             std::cout << "OK - Loaded glTF: " << filename << std::endl;
 
@@ -231,9 +234,18 @@ namespace GLApp {
         {
             tinygltf::Primitive primitive = tinymesh.primitives[i];
             tinygltf::Accessor indexAccessor = model.accessors[primitive.indices];
-            tinygltf::Material material = model.materials[primitive.material];
 
             glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mesh.vbos.at(indexAccessor.bufferView));
+
+            if (primitive.material < 0)
+            {
+                glDrawElements(primitive.mode, indexAccessor.count,
+                            indexAccessor.componentType,
+                            BUFFER_OFFSET(indexAccessor.byteOffset));
+                continue;
+            }
+
+            tinygltf::Material material = model.materials[primitive.material];
 
             Texture texture;
             if (material.pbrMetallicRoughness.baseColorTexture.index > -1 && (features & ALBEDO))
