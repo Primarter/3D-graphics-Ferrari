@@ -69,7 +69,7 @@ void main(void)
     vec2 p2 = in_uv * 10.0 + vec2(epsilon, 0);
     vec2 p3 = in_uv * 10.0 + vec2(0, epsilon);
 
-    float noise_value1 = cnoise(p1);
+    float noise_value1 = cnoise(p1 + vec2(sin(time) * .2, cos(time) * .6) / 2.0);
     float noise_value2 = cnoise(p2);
     float noise_value3 = cnoise(p3);
 
@@ -77,7 +77,7 @@ void main(void)
     vec3 pp2 = (vec3(p2.x, noise_value2, p2.y));
     vec3 pp3 = (vec3(p3.x, noise_value3, p3.y));
 
-    vs_out.normal = abs(normalize(cross(pp2 - pp1, pp3 - pp1))) * 10.0;
+    vs_out.normal = normalize(cross(pp2 - pp1, pp3 - pp1));
 
     // bump
     pos.y += noise_value1 * bump_strength;

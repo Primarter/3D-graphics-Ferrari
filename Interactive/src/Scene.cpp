@@ -95,6 +95,7 @@ void Scene::render(GLApp::Context& ctx)
     this->planeShader.setFloat("step_value", stepValue);
     this->planeShader.setFloat("bump_strength", bumpStrength);
     this->planeShader.setFloat("time", t);
+    this->planeShader.setVec3("camera_pos", camera.Position);
     this->plane.draw(this->planeShader);
 
     glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
