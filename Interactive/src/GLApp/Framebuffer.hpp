@@ -22,7 +22,7 @@ namespace GLApp
     {
         private:
             unsigned int quadVAO, quadVBO;
-            GLuint textureColorbuffer, depthTexture, rbo;
+            GLuint textureColorbuffer, depthTexture;//, rbo;
 
         public:
             GLuint id;
@@ -32,6 +32,6 @@ namespace GLApp
             Shader screenShader;
 
             void setup(const char *vertShader, const char *fragShader, size_t windowWidth, size_t windowHeight);
-            void draw(GLApp::Context &ctx);
+            void draw(void);
     };
 }

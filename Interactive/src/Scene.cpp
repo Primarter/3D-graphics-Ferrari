@@ -5,7 +5,14 @@ void Scene::setup(GLApp::Context& ctx)
     cout << endl << "Loading content..." << endl;
 
     GLApp::FeatureMask mask = GLApp::NONE | GLApp::ALBEDO | GLApp::NORMALS | GLApp::METALLIC_ROUGHNESS | GLApp::AMBIENT_OCCLUSION;
-    // this->model.loadGLTF("./assets/helmet/DamagedHelmet.gltf", mask);
+    this->helmet.loadGLTF("./assets/helmet/DamagedHelmet.gltf", mask);
+    this->helmet.transform = {
+        .position = {-.7, .6, .0},
+        .rotation = {0.7, 0.0, 0.0},
+        .scale = {.2, .2, .2}
+    };
+
+    mask = GLApp::NONE | GLApp::NORMALS | GLApp::AMBIENT_OCCLUSION;
     this->sofa.loadGLTF("./assets/sofa/GlamVelvetSofa.gltf", mask);
 
     mask = GLApp::NONE | GLApp::ALBEDO;
@@ -102,6 +109,7 @@ void Scene::render(GLApp::Context& ctx)
     this->PBRShader.setMat4("view_matrix", viewMatrix);
     this->PBRShader.setMat4("proj_matrix", ctx.projMatrix);
     this->sofa.draw(this->PBRShader);
+    this->helmet.draw(this->PBRShader);
 
     this->unlitShader.use();
     this->unlitShader.setMat4("view_matrix", viewMatrix);
@@ -134,7 +142,7 @@ void Scene::render(GLApp::Context& ctx)
     framebuffer.screenShader.setFloat("time", t);
     framebuffer.screenShader.setVec3("background_color", backgroundColor);
 
-    framebuffer.draw(ctx);
+    framebuffer.draw();
 
 
     #if defined(__APPLE__)
@@ -170,13 +178,23 @@ void Scene::ui(UNUSED GLApp::Context& ctx)
 
     ImGui::SetNextWindowBgAlpha(0.35f); // Transparent background
     if (ImGui::Begin("Info", nullptr, window_flags)) {
-        ImGui::Text("3D Graphics and Animation 2022, Camille Ferrari"); ImGui::Separator();
+        ImGui::Text("3D Graphics and Animation 2022, Camille Ferrari");
         ImGui::Text("Performance: %.3fms/Frame (%.1f FPS)", 1000.0f / io.Framerate, io.Framerate);
-        ImGui::Text("Pipeline: %s", this->PBRShader.error ? "ERROR" : "OK");
+        ImGui::Text("Press C to unlock the cursor and read the instructions");
+        if (ImGui::CollapsingHeader("Instructions"))
+        {
+            ImGui::Text("-Use your mouse to look around,\n WASD to move around,\n Q and E to move up or down");
+            ImGui::Text("-Press P to start Maxwell's party");
+            ImGui::Text("-You can move stuff around using the Models tab");
+            ImGui::Text("-Edit the floor using the Plane shader settings");
+            ImGui::Text("-Increment or decrement the effect\n to go over every post processing effect");
+            ImGui::Text("-Collapse the window to experience everything perfectly!");
+        }
     }
 
     if (ImGui::CollapsingHeader("Models"))
     {
+        helmet.ImGuiTransform("Helmet");
         sofa.ImGuiTransform("Sofa");
         maxwell.ImGuiTransform("Maxwell");
         plane.ImGuiTransform("Plane");

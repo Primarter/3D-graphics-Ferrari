@@ -56,6 +56,7 @@ class Scene : public GLApp::IScene {
 
         glm::vec3 light_pos = vec3(1, 1, 0);
 
+        GLApp::Model helmet;
         GLApp::Model sofa;
         GLApp::Model maxwell;
         GLApp::Model plane;
@@ -65,7 +66,7 @@ class Scene : public GLApp::IScene {
         GLApp::Shader planeShader;
 
         GLApp::Framebuffer framebuffer;
-        int effect = 1;
+        int effect = 0;
         char const *effectNames[5] = {
             "Original render",
             "Color compression (8 colors)",

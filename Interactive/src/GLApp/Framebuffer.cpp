@@ -64,7 +64,7 @@ namespace GLApp
         glBindFramebuffer(GL_FRAMEBUFFER, 0);
     }
 
-    void Framebuffer::draw(GLApp::Context &ctx)
+    void Framebuffer::draw(void)
     {
         glBindVertexArray(quadVAO);
         glActiveTexture(GL_TEXTURE0);

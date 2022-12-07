@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.9)
-project(3DGraphics DESCRIPTION "3D Graphics interactive assignment")
+project(DingusParty DESCRIPTION "3D Graphics interactive assignment")
 
 set(PROJECT_ROOT .)
 
@@ -37,23 +37,23 @@ set(SRC_LIBS
     ${PROJECT_ROOT}/include/tinygltf/tiny_gltf.cc
 )
 
-add_executable(3DGraphics
+add_executable(DingusParty
     ${SRC_FILES}
     ${SRC_LIBS}
 )
 
-target_compile_options(3DGraphics
+target_compile_options(DingusParty
     PRIVATE -W -Wall -Wextra -Wno-missing-field-initializers
 )
 
-target_include_directories(3DGraphics
+target_include_directories(DingusParty
     PRIVATE
         ${PROJECT_ROOT}/include/
 )
 
-target_link_directories(3DGraphics
+target_link_directories(DingusParty
     PRIVATE
         ${PROJECT_ROOT}/lib/
 )
 
-target_link_libraries(3DGraphics opengl32 glu32 gdi32 libglfw3.a)
+target_link_libraries(DingusParty opengl32 glu32 gdi32 libglfw3.a)
