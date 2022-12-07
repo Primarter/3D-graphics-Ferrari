@@ -57,6 +57,7 @@ class Scene : public GLApp::IScene {
         glm::vec3 light_pos = vec3(1, 1, 0);
 
         GLApp::Model helmet;
+        GLApp::Model table;
         GLApp::Model sofa;
         GLApp::Model maxwell;
         GLApp::Model plane;

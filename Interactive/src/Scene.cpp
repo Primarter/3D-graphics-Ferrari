@@ -4,7 +4,7 @@ void Scene::setup(GLApp::Context& ctx)
 {
     cout << endl << "Loading content..." << endl;
 
-    GLApp::FeatureMask mask = GLApp::NONE | GLApp::ALBEDO | GLApp::NORMALS | GLApp::METALLIC_ROUGHNESS | GLApp::AMBIENT_OCCLUSION;
+    GLApp::FeatureMask mask = GLApp::ALBEDO | GLApp::NORMALS | GLApp::METALLIC_ROUGHNESS | GLApp::AMBIENT_OCCLUSION;
     this->helmet.loadGLTF("./assets/helmet/DamagedHelmet.gltf", mask);
     this->helmet.transform = {
         .position = {-.7, .6, .0},
@@ -12,10 +12,18 @@ void Scene::setup(GLApp::Context& ctx)
         .scale = {.2, .2, .2}
     };
 
-    mask = GLApp::NONE | GLApp::NORMALS | GLApp::AMBIENT_OCCLUSION;
+    mask = GLApp::ALBEDO | GLApp::NORMALS;
+    this->table.loadGLTF("./assets/table/table.gltf", mask);
+    this->table.transform = {
+        .position = {0.0, .0, .3},
+        .rotation = {0.0, 0.0, 0.0},
+        .scale = {.5, .5, .5}
+    };
+
+    mask = GLApp::NORMALS | GLApp::AMBIENT_OCCLUSION;
     this->sofa.loadGLTF("./assets/sofa/GlamVelvetSofa.gltf", mask);
 
-    mask = GLApp::NONE | GLApp::ALBEDO;
+    mask = GLApp::ALBEDO;
     this->maxwell.loadGLTF("./assets/maxwell/maxwell.gltf", mask);
     this->maxwell.transform = {
         .position = {.57, .44, -.05},
@@ -108,8 +116,9 @@ void Scene::render(GLApp::Context& ctx)
     this->PBRShader.setVec3("camera_pos", camera.Position);
     this->PBRShader.setMat4("view_matrix", viewMatrix);
     this->PBRShader.setMat4("proj_matrix", ctx.projMatrix);
-    this->sofa.draw(this->PBRShader);
     this->helmet.draw(this->PBRShader);
+    this->table.draw(this->PBRShader);
+    this->sofa.draw(this->PBRShader);
 
     this->unlitShader.use();
     this->unlitShader.setMat4("view_matrix", viewMatrix);
@@ -195,6 +204,7 @@ void Scene::ui(UNUSED GLApp::Context& ctx)
     if (ImGui::CollapsingHeader("Models"))
     {
         helmet.ImGuiTransform("Helmet");
+        table.ImGuiTransform("Table");
         sofa.ImGuiTransform("Sofa");
         maxwell.ImGuiTransform("Maxwell");
         plane.ImGuiTransform("Plane");
