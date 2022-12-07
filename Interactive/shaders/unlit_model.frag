@@ -8,6 +8,7 @@ in VS_OUT {
 } fs_in;
 
 uniform sampler2D texture_albedo;
+uniform vec3 color_factor = vec3(1.0);
 
 void main()
 {
@@ -15,5 +16,5 @@ void main()
     if (color.a < .2)
         discard;
 
-    FragColor = color;
+    FragColor = vec4(color.rgb * color_factor, color.a);
 }

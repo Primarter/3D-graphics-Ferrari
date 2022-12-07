@@ -4,9 +4,17 @@
 #include "GLApp/Model.hpp"
 #include "GLApp/Debugger.hpp"
 #include "GLApp/Shader.hpp"
+#include "GLApp/Framebuffer.hpp"
 #include "GLApp/Camera.hpp"
 
 class Scene : public GLApp::IScene {
+
+    struct Light
+    {
+        glm::vec3 position = glm::vec3(0.0, 0.0, 0.0);
+        glm::vec3 color = glm::vec3(0.0, 0.0, 0.0);
+        float strength = 1;
+    };
 
     public:
         Scene(void) = default;
@@ -37,15 +45,27 @@ class Scene : public GLApp::IScene {
         float bumpStrength = .3;
         float shaderScale = 5;
 
-        glm::vec3 light_pos = vec3(1, 1.0, 0);
+        std::vector<Light> lights = {
+            {vec3(1, 1.4, .3), vec3(1.0, 0.3176, 0.1981), 1},
+            {vec3(0, .8, 0), vec3(1, 0, 0), 1},
+            {vec3(1, 1, 0), vec3(0, 1, 0), 1},
+            {vec3(-.75, .65, 0), vec3(0, .2, 1), 1}
+        };
 
-        GLApp::Model model;
+        bool party = false;
+
+        glm::vec3 light_pos = vec3(1, 1, 0);
+
+        GLApp::Model sofa;
         GLApp::Model maxwell;
         GLApp::Model plane;
 
         GLApp::Shader PBRShader;
         GLApp::Shader unlitShader;
         GLApp::Shader planeShader;
+
+        GLApp::Framebuffer framebuffer;
+        int effect = 1;
 
         GLApp::Debugger debugger;
 

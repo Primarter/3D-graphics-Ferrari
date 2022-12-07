@@ -25,11 +25,10 @@ uniform sampler2D texture_ambient_occlusion;
 uniform bool has_ambient_occlusion;
 
 // lights
-const int NB_LIGHTS = 1;
-uniform vec3 light_pos[1] = {vec3(1.0, 1.0, 1.0)};
-// uniform vec3 light_pos[1] = {-vec3(.2, -.8, -.5)};
-uniform vec3 light_colors[1];// = {vec3(1.0, 1.0, 1.0)};
-uniform float light_powers[1] = {3.0};
+uniform int nb_lights;
+uniform vec3 light_pos[32];
+uniform vec3 light_colors[32];
+uniform float light_strengths[32];
 
 uniform vec3 camera_pos;
 
@@ -98,7 +97,7 @@ vec3 fresnel_schlick(float cosTheta, vec3 F0)
 // ----------------------------------------------------------------------------
 void main()
 {
-    vec4 base_color         = has_albedo ? texture(texture_albedo, fs_in.tex_coords).rgba : vec4(1.0, 0.0, 1.0, 1.0);
+    vec4 base_color         = has_albedo ? texture(texture_albedo, fs_in.tex_coords).rgba : vec4(1.0, 1.0, 1.0, 1.0);
     vec3 albedo             = pow(base_color.rgb, vec3(2.2));
     vec2 metallic_roughness = has_metallic_roughness ? texture(texture_metallic_roughness, fs_in.tex_coords).gb : vec2(.5);
     float roughness         = metallic_roughness.x;//texture(roughnessMap, fs_in.tex_coords).r;
@@ -110,18 +109,18 @@ void main()
 
     // calculate reflectance at normal incidence; if dia-electric (like plastic) use F0
     // of 0.04 and if it's a metal, use the albedo color as F0 (metallic workflow)
-    vec3 F0 = vec3(0.04);
+    vec3 F0 = vec3(0.0);
     F0 = mix(F0, albedo, metallic);
 
     // reflectance equation
     vec3 Lo = vec3(0.0);
-    for(int i = 0; i < NB_LIGHTS; ++i)
+    for(int i = 0; i < nb_lights; ++i)
     {
         // calculate per-light radiance
         vec3 L = normalize(light_pos[i] - fs_in.frag_pos);
         vec3 H = normalize(V + L);
         float distance = length(light_pos[i] - fs_in.frag_pos);
-        float attenuation = (1.0 / (distance * distance)) * light_powers[i];
+        float attenuation = (1.0 / (distance * distance)) * light_strengths[i];
         vec3 radiance = light_colors[i] * attenuation;
 
         // Cook-Torrance BRDF
