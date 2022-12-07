@@ -69,7 +69,7 @@ void Scene::render(GLApp::Context& ctx)
 
     // Clear colour buffer
     glm::vec4 backgroundColor = glm::vec4(0.0039, 0.0078, 0.1216, 1.0);
-    glClearBufferfv(GL_COLOR, 0, &backgroundColor[0]);
+    glClearBufferfv(GL_COLOR, 0, glm::value_ptr(backgroundColor));
 
     // Clear depth buffer
     static const GLfloat one = 1.0f;
@@ -132,8 +132,10 @@ void Scene::render(GLApp::Context& ctx)
     framebuffer.screenShader.setVec2("resolution", vec2(ctx.windowWidth, ctx.windowHeight));
     framebuffer.screenShader.setInt("effect", effect);
     framebuffer.screenShader.setFloat("time", t);
+    framebuffer.screenShader.setVec3("background_color", backgroundColor);
 
-    framebuffer.draw();
+    framebuffer.draw(ctx);
+
 
     #if defined(__APPLE__)
         glCheckError();
@@ -193,6 +195,10 @@ void Scene::ui(UNUSED GLApp::Context& ctx)
     ImGui::Separator();
 
     ImGui::InputInt("Effect", &effect);
+    if (effect >= 0 && effect < 5)
+        ImGui::Text("%s", effectNames[effect]);
+    else
+        ImGui::Text("No effect defined, default render");
 
     ImGui::End();
 

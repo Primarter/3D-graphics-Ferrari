@@ -12,6 +12,7 @@
 #include <glm/gtx/string_cast.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
+#include "GLApp.hpp"
 #include "Transform.hpp"
 #include "Shader.hpp"
 
@@ -21,7 +22,7 @@ namespace GLApp
     {
         private:
             unsigned int quadVAO, quadVBO;
-            GLuint textureColorbuffer, rbo;
+            GLuint textureColorbuffer, depthTexture, rbo;
 
         public:
             GLuint id;
@@ -31,6 +32,6 @@ namespace GLApp
             Shader screenShader;
 
             void setup(const char *vertShader, const char *fragShader, size_t windowWidth, size_t windowHeight);
-            void draw(void);
+            void draw(GLApp::Context &ctx);
     };
 }

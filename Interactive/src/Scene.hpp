@@ -66,6 +66,13 @@ class Scene : public GLApp::IScene {
 
         GLApp::Framebuffer framebuffer;
         int effect = 1;
+        char const *effectNames[5] = {
+            "Original render",
+            "Color compression (8 colors)",
+            "Chromatic aberration",
+            "Grayscale",
+            "Colored dithering",
+        };
 
         GLApp::Debugger debugger;
 
