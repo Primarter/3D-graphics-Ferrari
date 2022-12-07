@@ -77,8 +77,7 @@ void main()
     vec3 normal = normalize(cross(pp2 - pp1, pp3 - pp1));
 
     // layers
-    // vec2 layer1_offset = vec2(sin(time) * .15, cos(time) * .6) / 3.0;
-    vec3 layer1 = vec3(fs_in.bump);//vec3(cnoise(fs_in.tex_coords * (10.0 + plane_scale) - layer1_offset));
+    vec3 layer1 = vec3(fs_in.bump);
     vec2 layer2_offset = vec2(sin(time) * .4, cos(time) * .8) + 10.0;
     vec3 layer2 = vec3(cnoise(fs_in.tex_coords * (10.0 + plane_scale) + layer2_offset));
 

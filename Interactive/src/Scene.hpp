@@ -78,7 +78,4 @@ class Scene : public GLApp::IScene {
 
         GLApp::Debugger debugger;
 
-        vec3 modelPosition;
-        vec3 modelRotation;
-
 };
